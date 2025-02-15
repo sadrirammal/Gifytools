@@ -5,11 +5,16 @@ GifyTools is a simple software that converts the BambuuLab avi file to a gif. Re
 
 # High level Architecture:
 Frontend: Angular
-API: C# 
+
+API: C#
+
 Processing: Python or C++ workers that either access Database or get triggered by api.
 
 ### Processing
 -We will have workers that process the load. probably 80% CPU usage is fine, after that no more workers can be spinned up to ensure upload's still work
+
 -Client Side video compression to have less processing in the backend
+
 -Use high performing processing language. check advantages.
+
 -Do not store videos
