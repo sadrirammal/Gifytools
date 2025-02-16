@@ -1,0 +1,76 @@
+name: Build and Deploy PlantMate API to Prod
+
+on:
+  workflow_dispatch:  # This adds the manual trigger
+  push:
+    paths:
+      - 'GifyTools/**'
+    branches:
+      - master
+
+permissions: read-all
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+        
+      - name: Restore API dependencies
+        run: dotnet restore PlantMate/PlantMate.csproj
+      
+      - name: Build GifyTools API
+        run: dotnet build --no-restore --configuration Release Gifytools
+
+      - name: Publish
+        run: dotnet publish Gifytools/Gifytools.csproj -c Release -o release --nologo
+        
+      - name: Upload Build Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Application_Artifact
+          path: /home/runner/work/Gifytools/Gifytools/release/
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: Application_Artifact
+          path: /home/runner/work/Gifytools/Gifytools/release/
+      
+      - name: Deploy Gifytools API
+        uses: appleboy/scp-action@master
+        with: 
+          host: ${{ secrets.SERVER_IP }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          username: ${{ secrets.SSH_USERNAME }}
+          source: "/home/runner/work/Gifytools/Gifytools/release/*"
+          target: "/opt/dotnet"
+          strip_components: 3
+          rm: true  # Consider cleaning the remote directory before uploading new files if that's desirable
+          debug: true  # Keep this only if necessary for debugging
+
+      - name: Restart Services
+        uses: appleboy/ssh-action@master
+        with: 
+          host: ${{ secrets.SERVER_IP }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          script: |
+            systemctl daemon-reload
+            systemctl restart Gifytools.service
+
+      - uses: geekyeggo/delete-artifact@v5
+        with:
+            name: Application_Artifact
