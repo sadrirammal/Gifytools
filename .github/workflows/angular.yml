@@ -30,25 +30,21 @@ jobs:
           npm cache clean --force  # Clean npm cache
           npm install  # Reinstall dependencies cleanly
 
-
-
       - name: Build Angular App
         run: |
           cd web
           npm run build -- --configuration=production
 
+      - name: Debug: Verify Build Output
+        run: |
+          echo "Checking if the build directory exists before uploading..."
+          ls -lah web/dist/web/ || echo "⚠️ Build directory is missing!"
+
       - name: Upload Build Artifact
         uses: actions/upload-artifact@v4
         with:
           name: Web_Build
-          path: web/dist/web 
-
-      - name: List Build Directory
-        run: |
-          echo "Checking if the build directory exists..."
-          ls
-          ls -lah web/dist/web/  # List contents of the build folder
-
+          path: web/dist/web/
 
   deploy:
     needs: build
@@ -62,7 +58,12 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: Web_Build
-          path: /home/runner/web-build
+          path: web/dist/web/  # ✅ Ensure the path matches the upload
+
+      - name: Debug: Verify Downloaded Files
+        run: |
+          echo "Checking if the artifact was downloaded correctly..."
+          ls -lah web/dist/web/ || echo "⚠️ No files found in the downloaded artifact!"
 
       - name: Deploy to Nginx Server
         uses: appleboy/scp-action@master
@@ -70,10 +71,10 @@ jobs:
           host: ${{ secrets.SERVER_IP }}
           username: ${{ secrets.SSH_USERNAME }}
           password: ${{ secrets.SERVER_PASSWORD }}
-          source: "/home/runner/web-build/*"
-          target: "/var/www/html/web"  # Adjust based on your Nginx setup
+          source: "web/dist/web/*"  # ✅ Corrected path
+          target: "/var/www/html/web"
           strip_components: 3
-          rm: true  # Removes old files before uploading
+          rm: true
 
       - name: Restart Nginx
         uses: appleboy/ssh-action@master
