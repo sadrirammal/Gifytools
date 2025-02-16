@@ -1,10 +1,10 @@
-name: Build and Deploy Angular App to Nginx
+name: Build and Deploy Angular Web App to Nginx
 
 on:
   workflow_dispatch:  # Allows manual trigger
   push:
     paths:
-      - 'angular-app/**'  # Adjust path to match your Angular project folder
+      - 'web/**'  # Adjust path to match your Angular project folder
     branches:
       - master
 
@@ -21,23 +21,23 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'  # Adjust based on your Angular version
+          node-version: '20.11.1'  # Your specified Node.js version
 
       - name: Install Dependencies
         run: |
-          cd angular-app
-          npm ci  # Ensures a clean install
+          cd web
+          npm ci  # Ensures a clean and reproducible install
 
       - name: Build Angular App
         run: |
-          cd angular-app
+          cd web
           npm run build -- --configuration=production
-          
+
       - name: Upload Build Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: Angular_Build
-          path: angular-app/dist/  # Ensure this is your actual build output path
+          name: Web_Build
+          path: dist/web 
 
   deploy:
     needs: build
@@ -50,8 +50,8 @@ jobs:
       - name: Download Build Artifact
         uses: actions/download-artifact@v4
         with:
-          name: Angular_Build
-          path: /home/runner/angular-build
+          name: Web_Build
+          path: /home/runner/web-build
 
       - name: Deploy to Nginx Server
         uses: appleboy/scp-action@master
@@ -59,10 +59,10 @@ jobs:
           host: ${{ secrets.SERVER_IP }}
           username: ${{ secrets.SSH_USERNAME }}
           password: ${{ secrets.SERVER_PASSWORD }}
-          source: "/home/runner/angular-build/*"
-          target: "/var/www/html/angular-app"  # Adjust based on your Nginx setup
+          source: "/home/runner/web-build/*"
+          target: "/var/www/html/web"  # Adjust based on your Nginx setup
           strip_components: 3
-          rm: true
+          rm: true  # Removes old files before uploading
 
       - name: Restart Nginx
         uses: appleboy/ssh-action@master
@@ -76,4 +76,4 @@ jobs:
       - name: Cleanup Artifacts
         uses: geekyeggo/delete-artifact@v5
         with:
-          name: Angular_Build
+          name: Web_Build
