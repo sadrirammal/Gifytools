@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
+    <PackageReference Include="Plantup.Swagger" Version="1.0.0" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,6 +1,7 @@
 using Gifytools.Bll;
 using Gifytools.Settings;
 using Microsoft.AspNetCore.Http.Features;
+using Plantup.Swagger.Swagger;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,6 +16,8 @@ builder.Services.Configure<FileSystemSettings>(builder.Configuration.GetSection(
 
 builder.Services.AddTransient<IVideoToGifService, VideoToGifService>();
 
+builder.Services.AddPlantupSwagger("GifyTools API", "1.0");
+
 builder.WebHost.ConfigureKestrel(serverOptions =>
 {
     serverOptions.Limits.MaxRequestBodySize = 100_000_000; // 100MB
@@ -23,11 +26,7 @@ builder.WebHost.ConfigureKestrel(serverOptions =>
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+app.UsePlantupSwaggerUi();
 
 app.UseHttpsRedirection();
 
