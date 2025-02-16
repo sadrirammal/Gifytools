@@ -1,0 +1,25 @@
+<div class="upload-container">
+    <input type="file" (change)="onFileSelected($event)" #fileInput hidden />
+    <button (click)="fileInput.click()">Select Video</button>
+    <button (click)="onUpload()" [disabled]="!selectedFile">Upload</button>
+  
+    <p *ngIf="uploadProgress >= 0">Upload Progress: {{ uploadProgress }}%</p>
+  </div>
+  
+  <!-- Optional: Additional Inputs -->
+  <div>
+    <label>
+      FPS:
+      <input type="number" [(ngModel)]="conversionOptions.Fps" />
+    </label>
+    <label>
+      Width:
+      <input type="number" [(ngModel)]="conversionOptions.Width" />
+    </label>
+    <label>
+      Set Reverse:
+      <input type="checkbox" [(ngModel)]="conversionOptions.SetReverse" />
+    </label>
+  </div>
+
+  <img *ngIf="generatedGifUrl" [src]="generatedGifUrl" alt="Generated GIF">

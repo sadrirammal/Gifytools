@@ -15,7 +15,7 @@ public class GifController : ControllerBase
         _videoToGifService = videoToGifService;
     }
 
-    [HttpPost]
+    [HttpPost("videoToGif")]
     public async Task<IActionResult> CreateGif([FromForm] GifConversionOptions options)
     {
         if (options.VideoFile == null || options.VideoFile.Length == 0)
@@ -27,14 +27,27 @@ public class GifController : ControllerBase
         var path = await _videoToGifService.UploadVideo(options.VideoFile);
 
         // Convert video to gif
+        string gifPath;
         try
         {
-            await _videoToGifService.ConvertToGif(path, options.VideoFile.Name, options);
+            gifPath = await _videoToGifService.ConvertToGif(path, options.VideoFile.Name, options);
         }
         catch (Exception ex)
         {
             Console.WriteLine("An error occurred: " + ex.Message);
+            return StatusCode(500, "Error processing the GIF.");
         }
-        return Ok();
+
+        // Check if the GIF file was successfully created
+        if (!System.IO.File.Exists(gifPath))
+        {
+            return StatusCode(500, "GIF generation failed.");
+        }
+
+        var fileStream = new FileStream(gifPath, FileMode.Open, FileAccess.Read);
+        var fileType = "image/gif";
+        var fileName = Path.GetFileName(gifPath);
+
+        return File(fileStream, fileType, fileName);
     }
 }

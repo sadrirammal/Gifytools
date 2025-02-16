@@ -58,7 +58,7 @@ public class VideoToGifService : IVideoToGifService
         await RunFFmpegCommandAsync(arguments);
     }
 
-    public async Task ConvertToGif(string inputPath, string fileName, GifConversionOptions options)
+    public async Task<string> ConvertToGif(string inputPath, string fileName, GifConversionOptions options)
     {
         if (string.IsNullOrEmpty(inputPath) || !File.Exists(inputPath))
         {
@@ -151,6 +151,8 @@ public class VideoToGifService : IVideoToGifService
         string arguments = string.Join(" ", ffmpegArgs);
 
         await RunFFmpegCommandAsync(arguments);
+
+        return fullOutputPath;
     }
 
 
@@ -247,10 +249,6 @@ public class VideoToGifService : IVideoToGifService
         catch (Exception ex)
         {
             throw ex;
-        }
-        finally
-        {
-            process.Dispose();
         }
 
         string output = outputBuilder.ToString();
