@@ -23,7 +23,6 @@ jobs:
         with:
           node-version: '20.11.1'  # Your specified Node.js version
 
-      - name: Install Dependencies
       - name: Clean and Install Dependencies
         run: |
           cd web
