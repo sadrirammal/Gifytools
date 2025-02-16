@@ -17,4 +17,14 @@ Processing: Python or C++ workers that either access Database or get triggered b
 
 -Use high performing processing language. check advantages.
 
--Do not store videos
+-Do not store videos delete them right after creating a gif
+
+-Only store gifs for up to 24h and then delete them via Job.
+
+
+# Setting up ubuntu server
+1. Create a digital ocean ubuntu droplet on the lowest of the low tiers
+2. sudo apt update && sudo apt upgrade -y
+3. sudo apt install -y ffmpeg
+4. which ffmpeg -> to get path of ffmpeg (put this into web config)
+5. 
