@@ -23,8 +23,35 @@ Processing: Python or C++ workers that either access Database or get triggered b
 
 
 # Setting up ubuntu server
+
+## Prepping Ubuntu
 1. Create a digital ocean ubuntu droplet on the lowest of the low tiers
 2. sudo apt update && sudo apt upgrade -y
 3. sudo apt install -y ffmpeg
 4. which ffmpeg -> to get path of ffmpeg (put this into web config)
-5. 
+
+## Configuring Nginx and get Services setup
+1. Install nginx by doing: apt install nginx -y
+2. Install .net runtime apt install -y aspnetcore-runtime-8.0
+3. sudo nano /etc/systemd/system/Gifytools.service
+4. systemctl start Gifytools
+5. systemctl enable Gifytools
+
+### Service contents:
+
+[Unit]
+Description=PlantMate
+
+[Service]
+ExecStart=/usr/bin/dotnet /opt/dotnet/Gifytools.dll
+Restart=always
+#Restart service after 10 seconds if the dotnet service crashes:
+RestartSec=10
+KillSignal=SIGINT
+SyslogIdentifier=dotnet-Gifytools
+User=root
+Environment=ASPNETCORE_ENVIRONMENT=Production
+
+[Install]
+WantedBy=multi-user.target
+
