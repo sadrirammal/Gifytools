@@ -35,7 +35,7 @@ jobs:
           cd web
           npm run build -- --configuration=production
 
-      - name: Debug: Verify Build Output
+      - name: Verify Build Output
         run: |
           echo "Checking if the build directory exists before uploading..."
           ls -lah web/dist/web/ || echo "⚠️ Build directory is missing!"
