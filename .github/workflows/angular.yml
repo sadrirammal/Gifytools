@@ -24,9 +24,14 @@ jobs:
           node-version: '20.11.1'  # Your specified Node.js version
 
       - name: Install Dependencies
+      - name: Clean and Install Dependencies
         run: |
           cd web
-          npm ci  # Ensures a clean and reproducible install
+          rm -rf node_modules package-lock.json  # Remove corrupted dependencies
+          npm cache clean --force  # Clean npm cache
+          npm install  # Reinstall dependencies cleanly
+
+
 
       - name: Build Angular App
         run: |
