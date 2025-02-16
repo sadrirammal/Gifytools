@@ -1,10 +1,10 @@
-name: Build and Deploy GifyTools API to Prod
+name: Build and Deploy Gifytools API to Prod
 
 on:
   workflow_dispatch:  # This adds the manual trigger
   push:
     paths:
-      - 'GifyTools/**'
+      - 'Gifytools/**'
     branches:
       - master
 
@@ -23,9 +23,9 @@ jobs:
           dotnet-version: '8.0.x'
         
       - name: Restore API dependencies
-        run: dotnet restore GifyTools/GifyTools.csproj
+        run: dotnet restore Gifytools/Gifytools.csproj
       
-      - name: Build GifyTools API
+      - name: Build Gifytools API
         run: dotnet build --no-restore --configuration Release Gifytools
 
       - name: Publish
