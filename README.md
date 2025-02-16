@@ -54,7 +54,10 @@ WantedBy=multi-user.target
 
 ### Setup certbot
 1. sudo apt install certbot python3-certbot-nginx -y
-2. sudo certbot certonly --nginx -d api.gifytools.com -d www.gifytools.com (important you have to have set the dns records before doing this)
+(important you have to have set the dns records before doing this)
+2. sudo certbot certonly --nginx -d api.gifytools.com
+3. sudo certbot certonly --nginx -d www.gifytools.com
+4. sudo certbot certonly --nginx -d gifytools.com 
 
 ## Configuring nginx
 1. Install nginx by doing: apt install nginx -y
