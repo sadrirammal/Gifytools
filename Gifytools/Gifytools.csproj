@@ -10,4 +10,9 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="gifOutput\" />
+    <Folder Include="videoInput\" />
+  </ItemGroup>
+
 </Project>

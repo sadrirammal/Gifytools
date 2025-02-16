@@ -16,20 +16,20 @@ public class GifController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> Get(IFormFile? videoFile)
+    public async Task<IActionResult> CreateGif(GifConversionOptions options)
     {
-        if (videoFile == null || videoFile.Length == 0)
+        if (options.VideoFile == null || options.VideoFile.Length == 0)
         {
             return BadRequest("No file uploaded.");
         }
 
         // Save uploaded video to file system
-        var path = await _videoToGifService.UploadVideo(videoFile);
+        var path = await _videoToGifService.UploadVideo(options.VideoFile);
 
         // Convert video to gif
         try
         {
-            await _videoToGifService.ConvertToGif(path, videoFile.Name);
+            await _videoToGifService.ConvertToGif(path, options.VideoFile.Name, options);
         }
         catch (Exception ex)
         {
