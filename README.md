@@ -62,6 +62,7 @@ WantedBy=multi-user.target
 1. Install nginx by doing: apt install nginx -y
 2. sudo nano /etc/nginx/sites-available/api
 3. sudo nano /etc/nginx/sites-available/www
+   
 sudo ln -s /etc/nginx/sites-available/api /etc/nginx/sites-enabled/
 
 sudo ln -s /etc/nginx/sites-available/www /etc/nginx/sites-enabled/
