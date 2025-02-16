@@ -8,14 +8,12 @@ Frontend: Angular
 
 API: C#
 
-Processing: Python or C++ workers that either access Database or get triggered by api.
+Processing: Processing done via library and direct process call.
 
 ### Processing
 -We will have workers that process the load. probably 80% CPU usage is fine, after that no more workers can be spinned up to ensure upload's still work
 
 -Client Side video compression to have less processing in the backend
-
--Use high performing processing language. check advantages.
 
 -Do not store videos delete them right after creating a gif
 
