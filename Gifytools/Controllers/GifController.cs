@@ -1,63 +1,40 @@
 ﻿using Gifytools.Bll;
+using Gifytools.Settings;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Gifytools.Controllers
+namespace Gifytools.Controllers;
+[Route("api/[controller]")]
+[ApiController]
+public class GifController : ControllerBase
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class GifController : ControllerBase
+    private readonly IVideoToGifService _videoToGifService;
+
+    public GifController(IVideoToGifService videoToGifService)
     {
-        [HttpGet]
-        public IActionResult Get()
+        _videoToGifService = videoToGifService;
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Get(IFormFile? videoFile)
+    {
+        if (videoFile == null || videoFile.Length == 0)
         {
-            try
-            {
-                // Path to the FFmpeg executable
-                string ffmpegPath = "C:\\ffmpeg\\bin\\ffmpeg.exe";
-
-                // Initialize the VideoToGif converter
-                VideoToGif converter = new VideoToGif(ffmpegPath);
-
-                // Input and output paths
-                string inputVideo = "C:\\data\\input.avi";
-                string outputGif = "C:\\data\\output.gif";
-
-                // Convert video to GIF
-                converter.ConvertToGif(inputVideo, outputGif);
-
-                Console.WriteLine("Conversion successful! GIF saved at: " + outputGif);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("An error occurred: " + ex.Message);
-            }
-            return Ok();
+            return BadRequest("No file uploaded.");
         }
 
-        [HttpGet("text")]
-        public IActionResult Get2()
+        // Save uploaded video to file system
+        var path = await _videoToGifService.UploadVideo(videoFile);
+
+        // Convert video to gif
+        try
         {
-            try
-            {
-                // Path to the FFmpeg executable
-                string ffmpegPath = "C:\\ffmpeg\\bin\\ffmpeg.exe";
-                string inputGif = "C:\\data\\output.gif";
-                string outputGif = "C:\\data\\outputWithText.gif";
-
-                // Initialize the VideoToGif converter
-                VideoToGif converter = new VideoToGif(ffmpegPath);
-
-                // Convert video to GIF
-                converter.AddTextToGif(inputGif, outputGif, "Plantup Watertank", 3, 720, 1080);
-
-                Console.WriteLine("Conversion successful! GIF saved at: " + outputGif);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("An error occurred: " + ex.Message);
-            }
-            return Ok();
+            await _videoToGifService.ConvertToGif(path, videoFile.Name);
         }
+        catch (Exception ex)
+        {
+            Console.WriteLine("An error occurred: " + ex.Message);
+        }
+        return Ok();
     }
 }
