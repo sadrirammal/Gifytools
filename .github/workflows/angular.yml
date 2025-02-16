@@ -1,0 +1,79 @@
+name: Build and Deploy Angular App to Nginx
+
+on:
+  workflow_dispatch:  # Allows manual trigger
+  push:
+    paths:
+      - 'angular-app/**'  # Adjust path to match your Angular project folder
+    branches:
+      - master
+
+permissions: read-all
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'  # Adjust based on your Angular version
+
+      - name: Install Dependencies
+        run: |
+          cd angular-app
+          npm ci  # Ensures a clean install
+
+      - name: Build Angular App
+        run: |
+          cd angular-app
+          npm run build -- --configuration=production
+          
+      - name: Upload Build Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Angular_Build
+          path: angular-app/dist/  # Ensure this is your actual build output path
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download Build Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: Angular_Build
+          path: /home/runner/angular-build
+
+      - name: Deploy to Nginx Server
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: ${{ secrets.SSH_USERNAME }}
+          password: ${{ secrets.SERVER_PASSWORD }}
+          source: "/home/runner/angular-build/*"
+          target: "/var/www/html/angular-app"  # Adjust based on your Nginx setup
+          strip_components: 3
+          rm: true
+
+      - name: Restart Nginx
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: ${{ secrets.SSH_USERNAME }}
+          password: ${{ secrets.SERVER_PASSWORD }}
+          script: |
+            systemctl restart nginx
+
+      - name: Cleanup Artifacts
+        uses: geekyeggo/delete-artifact@v5
+        with:
+          name: Angular_Build
