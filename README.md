@@ -30,8 +30,7 @@ Processing: Python or C++ workers that either access Database or get triggered b
 3. sudo apt install -y ffmpeg
 4. which ffmpeg -> to get path of ffmpeg (put this into web config)
 
-## Configuring Nginx and get Services setup
-1. Install nginx by doing: apt install nginx -y
+## Configuring Services 
 2. Install .net runtime apt install -y aspnetcore-runtime-8.0
 3. sudo nano /etc/systemd/system/Gifytools.service
 4. systemctl start Gifytools
@@ -54,4 +53,12 @@ Environment=ASPNETCORE_ENVIRONMENT=Production
 
 [Install]
 WantedBy=multi-user.target
+
+### Setup certbot
+1. sudo apt install certbot python3-certbot-nginx -y
+2. sudo certbot --nginx -d api.gifytools.com (important you have to have set the dns records before doing this)
+
+## Configuring nginx
+1. Install nginx by doing: apt install nginx -y
+2. sudo nano /etc/nginx/sites-available/api
 
