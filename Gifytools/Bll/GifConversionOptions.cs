@@ -32,7 +32,7 @@ public class GifConversionOptions
 
     // Text / Watermark
     public bool SetWatermark { get; set; } = false;
-    public string WatermarkText { get; set; }
+    public string? WatermarkText { get; set; }
     public string? WatermarkFont { get; set; }
 
     // Compression Level (Quality Optimization)
@@ -42,6 +42,5 @@ public class GifConversionOptions
     // Reduce Frames (Skip frames to reduce file size)
     public bool SetReduceFrames { get; set; } = false;
     public int FrameSkipInterval { get; set; } = 2; // Example: 2 means take every 2nd frame
-
-    public IFormFile? VideoFile { get; set; }
+    public IFormFile VideoFile { get; set; }
 }

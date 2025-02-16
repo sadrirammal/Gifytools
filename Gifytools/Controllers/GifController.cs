@@ -16,7 +16,7 @@ public class GifController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateGif(GifConversionOptions options)
+    public async Task<IActionResult> CreateGif([FromForm] GifConversionOptions options)
     {
         if (options.VideoFile == null || options.VideoFile.Length == 0)
         {
