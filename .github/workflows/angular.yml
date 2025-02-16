@@ -43,6 +43,13 @@ jobs:
           name: Web_Build
           path: dist/web 
 
+      - name: List Build Directory
+        run: |
+          echo "Checking if the build directory exists..."
+          ls
+          ls -lah web/dist/web/  # List contents of the build folder
+
+
   deploy:
     needs: build
     runs-on: ubuntu-latest
