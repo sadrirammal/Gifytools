@@ -23,21 +23,28 @@ jobs:
         with:
           node-version: '20.11.1'  # Your specified Node.js version
 
-      - name: Install Dependencies
+      - name: Clean and Install Dependencies
         run: |
           cd web
-          npm ci  # Ensures a clean and reproducible install
+          rm -rf node_modules package-lock.json  # Remove corrupted dependencies
+          npm cache clean --force  # Clean npm cache
+          npm install  # Reinstall dependencies cleanly
 
       - name: Build Angular App
         run: |
           cd web
           npm run build -- --configuration=production
 
+      - name: Verify Build Output
+        run: |
+          echo "Checking if the build directory exists before uploading..."
+          ls -lah web/dist/web/ || echo "⚠️ Build directory is missing!"
+
       - name: Upload Build Artifact
         uses: actions/upload-artifact@v4
         with:
           name: Web_Build
-          path: dist/web 
+          path: web/dist/web/
 
   deploy:
     needs: build
@@ -51,7 +58,12 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: Web_Build
-          path: /home/runner/web-build
+          path: web/dist/web/  # ✅ Ensure the path matches the upload
+
+      - name: Verify Downloaded Files
+        run: |
+          echo "Checking if the artifact was downloaded correctly..."
+          ls -lah web/dist/web/ || echo "⚠️ No files found in the downloaded artifact!"
 
       - name: Deploy to Nginx Server
         uses: appleboy/scp-action@master
@@ -59,10 +71,10 @@ jobs:
           host: ${{ secrets.SERVER_IP }}
           username: ${{ secrets.SSH_USERNAME }}
           password: ${{ secrets.SERVER_PASSWORD }}
-          source: "/home/runner/web-build/*"
-          target: "/var/www/html/web"  # Adjust based on your Nginx setup
+          source: "web/dist/web/*"  # ✅ Corrected path
+          target: "/var/www/html/web"
           strip_components: 3
-          rm: true  # Removes old files before uploading
+          rm: true
 
       - name: Restart Nginx
         uses: appleboy/ssh-action@master

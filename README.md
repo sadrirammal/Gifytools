@@ -8,14 +8,12 @@ Frontend: Angular
 
 API: C#
 
-Processing: Python or C++ workers that either access Database or get triggered by api.
+Processing: Processing done via library and direct process call.
 
 ### Processing
 -We will have workers that process the load. probably 80% CPU usage is fine, after that no more workers can be spinned up to ensure upload's still work
 
 -Client Side video compression to have less processing in the backend
-
--Use high performing processing language. check advantages.
 
 -Do not store videos delete them right after creating a gif
 
@@ -56,7 +54,10 @@ WantedBy=multi-user.target
 
 ### Setup certbot
 1. sudo apt install certbot python3-certbot-nginx -y
-2. sudo certbot certonly --nginx -d api.gifytools.com -d www.gifytools.com (important you have to have set the dns records before doing this)
+(important you have to have set the dns records before doing this)
+2. sudo certbot certonly --nginx -d api.gifytools.com
+3. sudo certbot certonly --nginx -d www.gifytools.com
+4. sudo certbot certonly --nginx -d gifytools.com 
 
 ## Configuring nginx
 1. Install nginx by doing: apt install nginx -y
