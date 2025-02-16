@@ -60,7 +60,7 @@ jobs:
           name: Web_Build
           path: web/dist/web/  # ✅ Ensure the path matches the upload
 
-      - name: Debug: Verify Downloaded Files
+      - name: Verify Downloaded Files
         run: |
           echo "Checking if the artifact was downloaded correctly..."
           ls -lah web/dist/web/ || echo "⚠️ No files found in the downloaded artifact!"
