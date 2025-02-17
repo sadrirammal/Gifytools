@@ -17,7 +17,7 @@ export class VideoUploadComponent {
   uploadProgress: number = 0;
 
   // Default Conversion Options (Match .NET Model)
-  conversionOptions: GifConversionOptions = {
+  options: GifConversionOptions = {
     SetFps: false,
     Fps: 15,
     Width: 720,
@@ -42,7 +42,13 @@ export class VideoUploadComponent {
     FrameSkipInterval: 2
   };
 
+  isConverting: boolean = false;
+
   constructor(private videoUploadService: VideoUploadService) {}
+
+  clearFile() {
+    this.selectedFile = null;
+  }
 
   // Handle file selection
   onFileSelected(event: any) {
@@ -52,18 +58,35 @@ export class VideoUploadComponent {
     }
   }
 
+  onFileDropped(event: DragEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+    // Handle file drop here
+    const file = event.dataTransfer?.files[0];
+    if (file) {
+      this.selectedFile = file;
+    }
+  }
+
+  onDragOver(event: DragEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+  }
+
   public generatedGifUrl: string = '';
   // Upload file to API
   onUpload() {
     if (!this.selectedFile) return;
+    this.isConverting = true;
+    this.options.VideoFile = this.selectedFile;
 
-    this.conversionOptions.VideoFile = this.selectedFile;
-
-    this.videoUploadService.videoToGif(this.conversionOptions).subscribe({
+    this.videoUploadService.videoToGif(this.options).subscribe({
       next: (blob) => {
         const objectURL = URL.createObjectURL(blob);
         this.generatedGifUrl = objectURL;
       },
-      error: () => console.log("Something went wrong")});
+        error: () => console.log("Something went wrong"),
+        complete: () => this.isConverting = false
+      });
   }
 }

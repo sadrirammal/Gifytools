@@ -1,25 +1,146 @@
-<div class="upload-container">
-    <input type="file" (change)="onFileSelected($event)" #fileInput hidden />
-    <button (click)="fileInput.click()">Select Video</button>
-    <button (click)="onUpload()" [disabled]="!selectedFile">Upload</button>
-  
-    <p *ngIf="uploadProgress >= 0">Upload Progress: {{ uploadProgress }}%</p>
-  </div>
-  
-  <!-- Optional: Additional Inputs -->
-  <div>
-    <label>
-      FPS:
-      <input type="number" [(ngModel)]="conversionOptions.Fps" />
-    </label>
-    <label>
-      Width:
-      <input type="number" [(ngModel)]="conversionOptions.Width" />
-    </label>
-    <label>
-      Set Reverse:
-      <input type="checkbox" [(ngModel)]="conversionOptions.SetReverse" />
-    </label>
-  </div>
+<div class="container-fluid p-0">
+    <!-- Hero Section -->
+    <div class="hero-section">
+        <div class="container">
+            <div class="text-center">
+                <h1 class="main-title">GifyTools</h1>
+                <h2>Free Video to Gif converter</h2>
+                <p class="subtitle">
+                    Transform your 3D printer timelapses into eye-catching GIFs
+                    for seamless social media sharing. Simple, fast, and effective.
+                </p>
+            </div>
+        </div>
+    </div>
 
-  <img *ngIf="generatedGifUrl" [src]="generatedGifUrl" alt="Generated GIF">
+    <div *ngIf="generatedGifUrl" class="text-center my-4">
+        <img [src]="generatedGifUrl" alt="Generated GIF" class="generated-gif">
+    </div>
+
+    <!-- Main Content Section -->
+    <div class="container">
+        <div class="row">
+            <!-- Upload Section -->
+            <div class="col-md-6">
+                <div class="upload-content">
+
+                    <!-- Upload Zone -->
+                    <div *ngIf="!selectedFile" class="upload-zone text-center" (dragover)="onDragOver($event)" (drop)="onFileDropped($event)"
+                        (click)="fileInput.click()">
+                        <input #fileInput type="file" (change)="onFileSelected($event)" [hidden]="true"
+                            accept="video/*,image/*" multiple>
+                        <i class="fa-solid fa-file-arrow-up upload-icon"></i>
+                        <h4 class="mb-3">Drop your files here</h4>
+                        <p class="text-muted mb-0">or click to browse</p>
+                    </div>
+
+                    <!-- Already uploaded -->
+                    <div *ngIf="selectedFile" class="upload-zone text-center">
+                        <i class="fa-solid fa-file upload-icon"></i>
+                        <h4 class="mb-3">Ready to convert</h4>
+                        <p class="text-muted mb-0"></p>
+                    </div>
+
+                    <div class="text-center mt-4">
+                        <button class="btn btn-primary me-2" (click)="onUpload()" [disabled]="!selectedFile || isConverting">
+                            <span><i class="fa-solid fa-check"></i> Convert to Gif</span>
+                        </button>
+                        <button class="btn btn-outline-secondary" (click)="clearFile()">
+                            Clear
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Options Section -->
+            <div class="col-md-6">
+                <div class="options-panel">
+                    <div class="row g-3">
+                        <!-- FPS -->
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-center">
+                                <div class="form-check me-2">
+                                    <input class="form-check-input" type="checkbox" [(ngModel)]="options.SetFps" id="setFps">
+                                    <label class="form-check-label" for="setFps">FPS</label>
+                                </div>
+                                <input type="number" class="form-control form-control-sm" [(ngModel)]="options.Fps" min="1"
+                                    max="60" [disabled]="!options.SetFps">
+                            </div>
+                        </div>
+
+                        <!-- Width -->
+                        <div class="col-md-6">
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-text">Width</span>
+                                <input type="number" class="form-control" [(ngModel)]="options.Width" min="1">
+                            </div>
+                        </div>
+
+                        <!-- Speed -->
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-center">
+                                <div class="form-check me-2">
+                                    <input class="form-check-input" type="checkbox" [(ngModel)]="options.SetSpeed"
+                                        id="setSpeed">
+                                    <label class="form-check-label" for="setSpeed">Speed</label>
+                                </div>
+                                <input type="number" class="form-control form-control-sm"
+                                    [(ngModel)]="options.SpeedMultiplier" step="0.1" min="0.1"
+                                    [disabled]="!options.SetSpeed">
+                            </div>
+                        </div>
+
+                        <!-- Compression -->
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-center">
+                                <div class="form-check me-2">
+                                    <input class="form-check-input" type="checkbox" [(ngModel)]="options.SetCompression"
+                                        id="setCompression">
+                                    <label class="form-check-label" for="setCompression">Quality</label>
+                                </div>
+                                <input type="range" class="form-range" [(ngModel)]="options.CompressionLevel" min="1"
+                                    max="10" [disabled]="!options.SetCompression">
+                            </div>
+                        </div>
+
+                        <!-- Watermark -->
+                        <div class="col-12">
+                            <div class="d-flex align-items-center">
+                                <div class="form-check me-2">
+                                    <input class="form-check-input" type="checkbox" [(ngModel)]="options.SetWatermark"
+                                        id="setWatermark">
+                                    <label class="form-check-label" for="setWatermark">Watermark</label>
+                                </div>
+                                <input type="text" class="form-control form-control-sm"
+                                    [(ngModel)]="options.WatermarkText" placeholder="Watermark text"
+                                    [disabled]="!options.SetWatermark">
+                            </div>
+                        </div>
+
+                        <!-- Reverse -->
+                        <div class="col-md-6">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" [(ngModel)]="options.SetReverse"
+                                    id="setReverse">
+                                <label class="form-check-label" for="setReverse">Reverse GIF</label>
+                            </div>
+                        </div>
+
+                        <!-- Frame Reduction -->
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-center">
+                                <div class="form-check me-2">
+                                    <input class="form-check-input" type="checkbox" [(ngModel)]="options.SetReduceFrames"
+                                        id="setReduceFrames">
+                                    <label class="form-check-label" for="setReduceFrames">Reduce</label>
+                                </div>
+                                <input type="number" class="form-control form-control-sm"
+                                    [(ngModel)]="options.FrameSkipInterval" min="2" [disabled]="!options.SetReduceFrames">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
