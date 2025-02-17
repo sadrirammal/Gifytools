@@ -9,7 +9,7 @@ import { Observable, timeout } from 'rxjs';
 export class VideoUploadService {
 
   // private api: string = "https://localhost:7143/api/gif";
-  private api: string = "https://gifytools.com:5000/api/gif";
+  private api: string = "https://api.gifytools.com/api/gif";
 
   constructor(private http: HttpClient) { }
 
