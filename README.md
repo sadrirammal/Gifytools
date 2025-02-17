@@ -36,6 +36,7 @@ Processing: Processing done via library and direct process call.
 
 ### Service contents:
 
+  GNU nano 8.1                            /etc/systemd/system/Gifytools.service                                     
 [Unit]
 Description=PlantMate
 
@@ -48,9 +49,14 @@ KillSignal=SIGINT
 SyslogIdentifier=dotnet-Gifytools
 User=root
 Environment=ASPNETCORE_ENVIRONMENT=Production
-
+Environment=FileSystemSettings__FFmpegPath=/usr/bin/ffmpeg
+Environment=FileSystemSettings__VideoInputPath=/opt/gifytools/videoInput
+Environment=FileSystemSettings__GifOutputPath=/opt/gifytools/gifOutput
+Environment=FileSystemSettings__Fonts__0__Name=DejaVu Sans
+Environment=FileSystemSettings__Fonts__0__Path=/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf
 [Install]
 WantedBy=multi-user.target
+
 
 ### Setup certbot
 1. sudo apt install certbot python3-certbot-nginx -y
@@ -70,3 +76,53 @@ sudo ln -s /etc/nginx/sites-available/www /etc/nginx/sites-enabled/
 
 4. sudo nginx -t
 6. sudo systemctl restart nginx
+
+### Automatically deleting videos and gifs
+In order to automatically delete all videos and gifs we are going to use a very simple approach. we just delete all files older than 1h in our output folders.
+
+1. sudo nano /usr/local/bin/cleanup.sh
+   #!/bin/bash
+
+# Directories to clean
+DIRS=(
+    "/opt/gifytools/videoInput"
+    "/opt/gifytools/gifOutput"
+)
+
+# Delete all files older than 1 hour in each directory
+for DIR in "${DIRS[@]}"; do
+    if [ -d "$DIR" ]; then
+        find "$DIR" -type f -mmin +60 -delete
+    fi
+done
+
+2. sudo chmod +x /usr/local/bin/cleanup.sh
+3. sudo nano /etc/systemd/system/cleanup.service
+[Unit]
+Description=Cleanup old files in videoInput and gifOutput
+After=network.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/cleanup.sh
+User=root
+
+[Install]
+WantedBy=multi-user.target
+
+4. sudo nano /etc/systemd/system/cleanup.timer
+[Unit]
+Description=Run Cleanup Service Every Minute
+
+[Timer]
+OnBootSec=1min
+OnUnitActiveSec=1min
+Persistent=true
+
+[Install]
+WantedBy=timers.target
+
+sudo systemctl daemon-reload
+sudo systemctl enable cleanup.timer
+sudo systemctl start cleanup.timer
+
