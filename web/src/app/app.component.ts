@@ -11,5 +11,5 @@ import { provideHttpClient } from '@angular/common/http';
   styleUrl: './app.component.scss'
 })
 export class AppComponent {
-  title = 'web';
+  title = 'GifyTools';
 }
