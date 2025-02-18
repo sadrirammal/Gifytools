@@ -115,11 +115,11 @@ public class GifController : ControllerBase
     }
 
 
-    [HttpGet("ConversionRequest")]
-    public async Task<ActionResult<List<ConversionRequestEntity>>> GetConversionRequests()
-    {
-        return await _appDbContext.ConversionRequests.ToListAsync();
-    }
+    //[HttpGet("ConversionRequest")]
+    //public async Task<ActionResult<List<ConversionRequestEntity>>> GetConversionRequests()
+    //{
+    //    return await _appDbContext.ConversionRequests.ToListAsync();
+    //}
 
     //TODO: remove once all logic is somewhere else
     //[HttpPost("videoToGif")]
