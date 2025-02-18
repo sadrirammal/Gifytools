@@ -32,131 +32,6 @@ public class VideoToGifService : IVideoToGifService
         }
     }
 
-    /// <summary>
-    /// Converts a video file to a GIF.
-    /// </summary>
-    /// <param name="inputPath">Path to the input video file.</param>
-    /// <param name="outputPath">Path to save the resulting GIF.</param>
-    /// <param name="fps">Frames per second for the GIF (default is 15).</param>
-    /// <param name="width">Width of the GIF (default is 720, aspect ratio preserved).</param>
-    public async Task ConvertToGif(string inputPath, string fileName, int fps = 15, int width = 720)
-    {
-        if (string.IsNullOrEmpty(inputPath) || !File.Exists(inputPath))
-        {
-            throw new ArgumentException("Input video file does not exist.", nameof(inputPath));
-        }
-
-        if (string.IsNullOrEmpty(_settings.GifOutputPath))
-        {
-            throw new ArgumentException("Output path is invalid.", nameof(_settings.GifOutputPath));
-        }
-
-        var fullOutputPath = Path.Combine(Directory.GetCurrentDirectory(), _settings.GifOutputPath, fileName);
-
-        // FFmpeg command arguments
-        string arguments = $"-i \"{inputPath}\" -vf \"fps={fps},scale={width}:-1:flags=lanczos\" -c:v gif \"{fullOutputPath}.gif\"";
-
-        await RunFFmpegCommandAsync(arguments);
-    }
-
-    //TODO: delete this once done with process queue
-    public async Task<string> ConvertToGif(string inputPath, string fileName, GifConversionOptions options)
-    {
-        if (string.IsNullOrEmpty(inputPath) || !File.Exists(inputPath))
-        {
-            throw new ArgumentException("Input video file does not exist.", nameof(inputPath));
-        }
-
-        if (string.IsNullOrEmpty(_settings.GifOutputPath))
-        {
-            throw new ArgumentException("Output path is invalid.", nameof(_settings.GifOutputPath));
-        }
-
-        var fullOutputPath = Path.Combine(Directory.GetCurrentDirectory(), _settings.GifOutputPath, $"{fileName}_{DateTime.UtcNow:yyyyMMdd_HHmmss}.gif");
-
-        var ffmpegArgs = new List<string>();
-
-        // Input File
-        ffmpegArgs.Add($"-i \"{inputPath}\"");
-
-        // Start & End Time (Trim)
-        if (options.SetStartTime)
-        {
-            ffmpegArgs.Add($"-ss {options.StartTime}");
-        }
-        if (options.SetEndTime)
-        {
-            ffmpegArgs.Add($"-to {options.EndTime}");
-        }
-
-        // Frame Rate (Reduce FPS)
-        if (options.SetFps)
-        {
-            ffmpegArgs.Add($"-r {options.Fps}");
-        }
-
-        // Speed Adjustment
-        if (options.SetSpeed && options.SpeedMultiplier > 0)
-        {
-            double speedFactor = 1 / options.SpeedMultiplier;
-            ffmpegArgs.Add($"-filter:v \"setpts={speedFactor}*PTS\"");
-        }
-
-        // Build the single "-vf" filter chain
-        var filterList = new List<string>();
-
-        // Cropping
-        if (options.SetCrop)
-        {
-            filterList.Add($"crop={options.CropWidth}:{options.CropHeight}:{options.CropX}:{options.CropY}");
-        }
-
-        // Scaling (Width Only - Maintain Aspect Ratio)
-        filterList.Add($"scale={options.Width}:-1:flags=lanczos"); // -1 keeps aspect ratio
-
-        // Reduce Frames (By skipping)
-        if (options.SetReduceFrames)
-        {
-            filterList.Add($"fps={options.FrameSkipInterval}");
-        }
-
-        // Reverse GIF
-        if (options.SetReverse)
-        {
-            filterList.Add("reverse");
-        }
-
-        // Add Watermark
-        if (options.SetWatermark && !string.IsNullOrEmpty(options.WatermarkText))
-        {
-            var fontPath = _settings.Fonts.Where(x => x.Name == options.WatermarkFont).Select(x => x.Path).FirstOrDefault() ??
-                           _settings.Fonts.Select(x => x.Path).First();
-            
-            filterList.Add($"drawtext=text='{options.WatermarkText}':fontfile='{fontPath}':fontcolor=white:fontsize=24:x=10:y=10");
-        }
-
-        // Apply the single "-vf" argument only if filters exist
-        if (filterList.Any())
-        {
-            ffmpegArgs.Add($"-vf \"{string.Join(",", filterList)}\"");
-        }
-
-        // Palette Optimization (Color Reduction for Quality)
-        if (options.SetCompression)
-        {
-            ffmpegArgs.Add("-filter_complex \"[0:v] palettegen=stats_mode=diff [p]; [0:v][p] paletteuse=dither=none\"");
-        }
-
-        // Output as GIF
-        ffmpegArgs.Add($"-c:v gif \"{fullOutputPath}\"");
-
-        string arguments = string.Join(" ", ffmpegArgs);
-
-        await RunFFmpegCommandAsync(arguments);
-
-        return fullOutputPath;
-    }
-
     public async Task<string> ConvertToGif(ConversionRequestEntity entity)
     {
         if (string.IsNullOrEmpty(entity.VideoInputPath) || !File.Exists(entity.VideoInputPath))
@@ -249,7 +124,7 @@ public class VideoToGifService : IVideoToGifService
 
         string arguments = string.Join(" ", ffmpegArgs);
 
-        await RunFFmpegCommandAsync(arguments);
+        await RunFFmpegCommandAsync(arguments, 600000);
         
         return fullOutputPath;
     }
@@ -264,7 +139,6 @@ public class VideoToGifService : IVideoToGifService
         {
             await videoFile.CopyToAsync(stream);
         }
-
 
         return fullPath;
     }
