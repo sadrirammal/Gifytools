@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { VideoUploadComponent } from "./video-upload/video-upload.component";
+import { VideoUploadComponent } from "./components/video-upload/video-upload.component";
 import { provideHttpClient } from '@angular/common/http';
 
 @Component({

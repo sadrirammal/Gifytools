@@ -1,0 +1,50 @@
+<div class="modal-header bg-dark text-light d-flex align-items-center">
+  <h4 class="modal-title mb-0">
+    <i class="fas" [ngClass]="{
+      'fa-spinner fa-spin':  conversionStatus === 2,
+      'fa-check-circle': conversionStatus === 3,
+      'fa-exclamation-circle': conversionStatus === 4,
+      'fa-clock': conversionStatus === 1
+    }"></i>
+    
+  </h4>
+</div>
+
+<div class="modal-body">
+  <div class="alert alert-danger" *ngIf="conversionErrorMessage">
+    <i class="fas fa-exclamation-triangle"></i> {{ conversionErrorMessage }}
+  </div>
+
+  <div class="conversion-details text-muted" *ngIf="conversionStatus === 1">
+    <p>Conversion pending</p>
+  </div>
+
+  <div class="conversion-details text-muted" *ngIf="conversionStatus === 2">
+    <p>Conversion started...</p>
+  </div>
+
+  <div class="conversion-details text-muted" *ngIf="conversionStatus === 3">
+    <p>Conversion finished</p>
+    <img *ngIf="generatedGifUrl" [src]="generatedGifUrl" alt="Converted GIF" style="max-width: 100%; height: auto;">
+  </div>
+
+  <div class="conversion-details text-muted" *ngIf="conversionStatus === 4">
+    <p>Conversion pending</p>
+  </div>
+</div>
+
+<div class="modal-footer bg-dark text-light">
+  <button type="button" 
+          class="btn btn-light" 
+          (click)="close()"
+          [disabled]="isLoading">
+    <i class="fas fa-times"></i> Close
+  </button>
+  
+  <button type="button" 
+          class="btn btn-success" 
+          (click)="downloadGif()"
+          *ngIf="generatedGifUrl">
+    <i class="fas fa-download"></i> Download
+  </button>
+</div>

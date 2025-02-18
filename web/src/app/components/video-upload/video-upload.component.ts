@@ -1,13 +1,16 @@
+// video-upload.component.ts
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, Inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { VideoUploadService } from '../services/video-upload.service';
-import { GifConversionOptions } from '../models/gif-converter-options.model';
+import { LoadingModalComponent } from '../modals/loading-modal/loading-modal.component';
+import { GifConversionOptions } from '../../models/gif-converter-options.model';
+import { VideoUploadService } from '../../services/video-upload.service';
+import { BsModalService, BsModalRef, ModalModule } from 'ngx-bootstrap/modal';
 
 @Component({
   selector: 'app-video-upload',
   standalone: true,
-  imports: [FormsModule, CommonModule],
+  imports: [FormsModule, CommonModule, LoadingModalComponent],
   templateUrl: './video-upload.component.html',
   styleUrl: './video-upload.component.scss'
 })
@@ -16,7 +19,6 @@ export class VideoUploadComponent {
   isConverting: boolean = false;
   conversionId: string | null = null;
   conversionStatus: string = '';
-  generatedGifUrl: string = '';
 
   // Default Conversion Options
   options: GifConversionOptions = {
@@ -43,11 +45,13 @@ export class VideoUploadComponent {
     SetReduceFrames: false,
     FrameSkipInterval: 10,
   };
-
-  constructor(private videoUploadService: VideoUploadService) {}
+  
+  constructor(private videoUploadService: VideoUploadService, private modalService: BsModalService) {}
 
   clearFile() {
     this.selectedFile = null;
+    this.isConverting = false;
+    this.conversionStatus = '';
   }
 
   // Handle file selection
@@ -75,55 +79,18 @@ export class VideoUploadComponent {
   // Upload file & start conversion
   onUpload() {
     if (!this.selectedFile) return;
-
     this.isConverting = true;
-    this.conversionStatus = 'Uploading & converting...';
-    this.options.VideoFile = this.selectedFile;
 
+    this.options.VideoFile = this.selectedFile; 
     this.videoUploadService.conversionRequest(this.options).subscribe({
       next: (id) => {
         this.conversionId = id;
-        this.pollConversionStatus(id); // Start polling for conversion status
+        this.modalService.show(LoadingModalComponent, { initialState: { conversionId: id } });
       },
-      error: () => {
-        this.conversionStatus = 'Conversion failed.';
-        this.isConverting = false;
+      error: (error) => {
+        console.error('Upload error:', error);
+        //TODO: add toast
       }
-    });
-  }
-
-  // Polling for conversion status
-  pollConversionStatus(conversionId: string) {
-    this.videoUploadService.pollConversionStatus(conversionId).subscribe({
-      next: (gifUrl) => {
-        if (gifUrl) {
-          this.generatedGifUrl = gifUrl;
-          this.conversionStatus = 'GIF is ready!';
-          this.isConverting = false;
-          this.downloadGif(conversionId);
-        } else {
-          this.conversionStatus = 'Processing...';
-        }
-      },
-      error: (err) => {
-        console.error('Polling failed:', err);
-        this.conversionStatus = 'Conversion failed.';
-        this.isConverting = false;
-      }
-    });
-  }
-
-  // Download the generated GIF
-  downloadGif(conversionId: string) {
-    this.videoUploadService.downloadGif(conversionId).subscribe(blob => {
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'converted.gif';
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      window.URL.revokeObjectURL(url);
     });
   }
 }

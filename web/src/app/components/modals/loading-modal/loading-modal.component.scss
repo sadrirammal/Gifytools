@@ -1,0 +1,46 @@
+:host {
+  display: block;
+}
+
+.modal-header {
+  .modal-title {
+    i {
+      margin-right: 8px;
+    }
+  }
+}
+
+.modal-body {
+  min-height: 120px;
+  padding: 1.5rem;
+
+  .progress {
+    height: 20px;
+  }
+
+  .conversion-details {
+    margin-top: 1rem;
+  }
+}
+
+.modal-footer {
+  button {
+    min-width: 100px;
+    
+    i {
+      margin-right: 6px;
+    }
+    
+    &:disabled {
+      cursor: not-allowed;
+    }
+  }
+}
+
+.alert {
+  margin-bottom: 0;
+  
+  i {
+    margin-right: 6px;
+  }
+}
