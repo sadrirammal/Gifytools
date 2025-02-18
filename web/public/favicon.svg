@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Background Circle -->
+  <circle cx="256" cy="256" r="240" fill="#4361ee" />
+  
+  <!-- Inner Video Frame -->
+  <rect x="146" y="156" width="220" height="200" rx="20" fill="white" />
+  
+  <!-- Play Button Triangle -->
+  <path d="M226 206 l80 50 l-80 50 z" fill="#4361ee"/>
+  
+  <!-- Animated Frame Dots -->
+  <g fill="white">
+    <circle cx="386" cy="206" r="15" />
+    <circle cx="386" cy="256" r="15" />
+    <circle cx="386" cy="306" r="15" />
+  </g>
+  
+  <!-- GifyTools Text -->
+  <text x="146" y="400" font-family="Arial, sans-serif" font-weight="bold" font-size="42" fill="white">GIFYTOOLS</text>
+  
+  <!-- Arrow indicating conversion -->
+  <path d="M410 256 l40 0 l-20 30 l-20 -30" fill="white" />
+</svg>
