@@ -121,40 +121,40 @@ public class GifController : ControllerBase
         return await _appDbContext.ConversionRequests.ToListAsync();
     }
 
+    //TODO: remove once all logic is somewhere else
+    //[HttpPost("videoToGif")]
+    //public async Task<IActionResult> CreateGif([FromForm] GifConversionOptions options)
+    //{
+    //    if (options.VideoFile == null || options.VideoFile.Length == 0)
+    //    {
+    //        return BadRequest("No file uploaded.");
+    //    }
 
-    [HttpPost("videoToGif")]
-    public async Task<IActionResult> CreateGif([FromForm] GifConversionOptions options)
-    {
-        if (options.VideoFile == null || options.VideoFile.Length == 0)
-        {
-            return BadRequest("No file uploaded.");
-        }
+    //    // Save uploaded video to file system
+    //    var path = await _videoToGifService.UploadVideo(options.VideoFile);
 
-        // Save uploaded video to file system
-        var path = await _videoToGifService.UploadVideo(options.VideoFile);
+    //    // Convert video to gif
+    //    string gifPath;
+    //    try
+    //    {
+    //        gifPath = await _videoToGifService.ConvertToGif(path, options.VideoFile.Name, options);
+    //    }
+    //    catch (Exception ex)
+    //    {
+    //        Console.WriteLine("An error occurred: " + ex.Message);
+    //        return StatusCode(500, "Error processing the GIF.");
+    //    }
 
-        // Convert video to gif
-        string gifPath;
-        try
-        {
-            gifPath = await _videoToGifService.ConvertToGif(path, options.VideoFile.Name, options);
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine("An error occurred: " + ex.Message);
-            return StatusCode(500, "Error processing the GIF.");
-        }
+    //    // Check if the GIF file was successfully created
+    //    if (!System.IO.File.Exists(gifPath))
+    //    {
+    //        return StatusCode(500, "GIF generation failed.");
+    //    }
 
-        // Check if the GIF file was successfully created
-        if (!System.IO.File.Exists(gifPath))
-        {
-            return StatusCode(500, "GIF generation failed.");
-        }
+    //    var fileStream = new FileStream(gifPath, FileMode.Open, FileAccess.Read);
+    //    var fileType = "image/gif";
+    //    var fileName = Path.GetFileName(gifPath);
 
-        var fileStream = new FileStream(gifPath, FileMode.Open, FileAccess.Read);
-        var fileType = "image/gif";
-        var fileName = Path.GetFileName(gifPath);
-
-        return File(fileStream, fileType, fileName);
-    }
+    //    return File(fileStream, fileType, fileName);
+    //}
 }
