@@ -76,20 +76,36 @@
 }
 
 .options-panel {
-    background-color: #f8f9fa;
-    padding: 1.5rem;
-    border-radius: 1rem;
-    height: 100%;
+  background-color: #f8f9fa;
+  padding: 1.5rem;
+  border-radius: 1rem;
+  height: 100%;
+
+  h3 {
+      color: #212529;
+      font-size: 1.5rem;
+      font-weight: 600;
+  }
+
+  .d-flex {
+      gap: 0.5rem;
+
+      .form-check {
+          min-width: 100px; // This ensures consistent width for switch labels
+      }
+
+      .form-control-sm, .form-range {
+          flex: 1; // This makes the input take up remaining space
+          max-width: none; // Remove the max-width constraint
+      }
+  }
 }
 
-.form-range {
-    width: 100px;
+// Override the previous fixed width styles
+.form-control-sm {
+  width: auto !important;
 }
 
 .input-group-sm {
-    width: auto;
-}
-
-.form-control-sm {
-    width: 80px;
+  width: 100% !important;
 }

@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Security.AccessControl;
 using System.Text;
+using Gifytools.Database.Entities;
 using Gifytools.Settings;
 using Microsoft.Extensions.Options;
 
@@ -58,6 +59,7 @@ public class VideoToGifService : IVideoToGifService
         await RunFFmpegCommandAsync(arguments);
     }
 
+    //TODO: delete this once done with process queue
     public async Task<string> ConvertToGif(string inputPath, string fileName, GifConversionOptions options)
     {
         if (string.IsNullOrEmpty(inputPath) || !File.Exists(inputPath))
@@ -155,7 +157,102 @@ public class VideoToGifService : IVideoToGifService
         return fullOutputPath;
     }
 
+    public async Task<string> ConvertToGif(ConversionRequestEntity entity)
+    {
+        if (string.IsNullOrEmpty(entity.VideoInputPath) || !File.Exists(entity.VideoInputPath))
+        {
+            throw new ArgumentException("Input video file does not exist.", nameof(entity.VideoInputPath));
+        }
 
+        if (string.IsNullOrEmpty(_settings.GifOutputPath))
+        {
+            throw new ArgumentException("Output path is invalid.", nameof(_settings.GifOutputPath));
+        }
+
+        var fullOutputPath = Path.Combine(Directory.GetCurrentDirectory(), _settings.GifOutputPath, $"{Path.GetFileNameWithoutExtension(entity.VideoInputPath)}_{DateTime.UtcNow:yyyyMMdd_HHmmss}.gif");
+
+        var ffmpegArgs = new List<string>();
+
+        // Input File
+        ffmpegArgs.Add($"-i \"{entity.VideoInputPath}\"");
+
+        // Start & End Time (Trim)
+        if (entity.SetStartTime)
+        {
+            ffmpegArgs.Add($"-ss {entity.StartTime}");
+        }
+        if (entity.SetEndTime)
+        {
+            ffmpegArgs.Add($"-to {entity.EndTime}");
+        }
+
+        // Frame Rate (Reduce FPS)
+        if (entity.SetFps)
+        {
+            ffmpegArgs.Add($"-r {entity.Fps}");
+        }
+
+        // Speed Adjustment
+        if (entity.SetSpeed && entity.SpeedMultiplier > 0)
+        {
+            double speedFactor = 1 / entity.SpeedMultiplier;
+            ffmpegArgs.Add($"-filter:v \"setpts={speedFactor}*PTS\"");
+        }
+
+        // Build the single "-vf" filter chain
+        var filterList = new List<string>();
+
+        // Cropping
+        if (entity.SetCrop)
+        {
+            filterList.Add($"crop={entity.CropWidth}:{entity.CropHeight}:{entity.CropX}:{entity.CropY}");
+        }
+
+        // Scaling (Width Only - Maintain Aspect Ratio)
+        filterList.Add($"scale={entity.Width}:-1:flags=lanczos"); // -1 keeps aspect ratio
+
+        // Reduce Frames (By skipping)
+        if (entity.SetReduceFrames)
+        {
+            filterList.Add($"fps={entity.FrameSkipInterval}");
+        }
+
+        // Reverse GIF
+        if (entity.SetReverse)
+        {
+            filterList.Add("reverse");
+        }
+
+        // Add Watermark
+        if (entity.SetWatermark && !string.IsNullOrEmpty(entity.WatermarkText))
+        {
+            var fontPath = _settings.Fonts.Where(x => x.Name == entity.WatermarkFont).Select(x => x.Path).FirstOrDefault() ??
+                           _settings.Fonts.Select(x => x.Path).First();
+
+            filterList.Add($"drawtext=text='{entity.WatermarkText}':fontfile='{fontPath}':fontcolor=white:fontsize=24:x=10:y=10");
+        }
+
+        // Apply the single "-vf" argument only if filters exist
+        if (filterList.Any())
+        {
+            ffmpegArgs.Add($"-vf \"{string.Join(",", filterList)}\"");
+        }
+
+        // Palette Optimization (Color Reduction for Quality)
+        if (entity.SetCompression)
+        {
+            ffmpegArgs.Add("-filter_complex \"[0:v] palettegen=stats_mode=diff [p]; [0:v][p] paletteuse=dither=none\"");
+        }
+
+        // Output as GIF
+        ffmpegArgs.Add($"-c:v gif \"{fullOutputPath}\"");
+
+        string arguments = string.Join(" ", ffmpegArgs);
+
+        await RunFFmpegCommandAsync(arguments);
+        
+        return fullOutputPath;
+    }
 
     public async Task<string> UploadVideo(IFormFile videoFile)
     {

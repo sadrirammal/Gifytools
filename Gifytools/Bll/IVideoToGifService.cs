@@ -1,4 +1,6 @@
-﻿namespace Gifytools.Bll;
+﻿using Gifytools.Database.Entities;
+
+namespace Gifytools.Bll;
 
 public interface IVideoToGifService
 {
@@ -6,5 +8,6 @@ public interface IVideoToGifService
     Task<string> UploadVideo(IFormFile videoFile);
     Task<string> ConvertToGif(string inputPath, string fileName, GifConversionOptions options);
 
+    Task<string> ConvertToGif(ConversionRequestEntity entity);
 
 }

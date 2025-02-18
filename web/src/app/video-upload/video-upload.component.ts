@@ -1,5 +1,4 @@
 import { CommonModule } from '@angular/common';
-import { HttpClient, HttpEvent, HttpEventType } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { VideoUploadService } from '../services/video-upload.service';
@@ -8,15 +7,18 @@ import { GifConversionOptions } from '../models/gif-converter-options.model';
 @Component({
   selector: 'app-video-upload',
   standalone: true,
-  imports: [FormsModule, CommonModule ],
+  imports: [FormsModule, CommonModule],
   templateUrl: './video-upload.component.html',
   styleUrl: './video-upload.component.scss'
 })
 export class VideoUploadComponent {
   selectedFile: File | null = null;
-  uploadProgress: number = 0;
+  isConverting: boolean = false;
+  conversionId: string | null = null;
+  conversionStatus: string = '';
+  generatedGifUrl: string = '';
 
-  // Default Conversion Options (Match .NET Model)
+  // Default Conversion Options
   options: GifConversionOptions = {
     SetFps: false,
     Fps: 15,
@@ -39,10 +41,8 @@ export class VideoUploadComponent {
     SetCompression: false,
     CompressionLevel: 0,
     SetReduceFrames: false,
-    FrameSkipInterval: 2
+    FrameSkipInterval: 10,
   };
-
-  isConverting: boolean = false;
 
   constructor(private videoUploadService: VideoUploadService) {}
 
@@ -61,7 +61,6 @@ export class VideoUploadComponent {
   onFileDropped(event: DragEvent) {
     event.preventDefault();
     event.stopPropagation();
-    // Handle file drop here
     const file = event.dataTransfer?.files[0];
     if (file) {
       this.selectedFile = file;
@@ -73,20 +72,58 @@ export class VideoUploadComponent {
     event.stopPropagation();
   }
 
-  public generatedGifUrl: string = '';
-  // Upload file to API
+  // Upload file & start conversion
   onUpload() {
     if (!this.selectedFile) return;
+
     this.isConverting = true;
+    this.conversionStatus = 'Uploading & converting...';
     this.options.VideoFile = this.selectedFile;
 
-    this.videoUploadService.videoToGif(this.options).subscribe({
-      next: (blob) => {
-        const objectURL = URL.createObjectURL(blob);
-        this.generatedGifUrl = objectURL;
+    this.videoUploadService.conversionRequest(this.options).subscribe({
+      next: (id) => {
+        this.conversionId = id;
+        this.pollConversionStatus(id); // Start polling for conversion status
       },
-        error: () => console.log("Something went wrong"),
-        complete: () => this.isConverting = false
-      });
+      error: () => {
+        this.conversionStatus = 'Conversion failed.';
+        this.isConverting = false;
+      }
+    });
+  }
+
+  // Polling for conversion status
+  pollConversionStatus(conversionId: string) {
+    this.videoUploadService.pollConversionStatus(conversionId).subscribe({
+      next: (gifUrl) => {
+        if (gifUrl) {
+          this.generatedGifUrl = gifUrl;
+          this.conversionStatus = 'GIF is ready!';
+          this.isConverting = false;
+          this.downloadGif(conversionId);
+        } else {
+          this.conversionStatus = 'Processing...';
+        }
+      },
+      error: (err) => {
+        console.error('Polling failed:', err);
+        this.conversionStatus = 'Conversion failed.';
+        this.isConverting = false;
+      }
+    });
+  }
+
+  // Download the generated GIF
+  downloadGif(conversionId: string) {
+    this.videoUploadService.downloadGif(conversionId).subscribe(blob => {
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'converted.gif';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+    });
   }
 }

@@ -9,6 +9,8 @@
                     Transform your 3D printer timelapses into eye-catching GIFs
                     for seamless social media sharing. Simple, fast, and effective.
                 </p>
+
+                <p>Let me know what you think: <a href="mailto:sadri.rammal&#64;plantup.io">sadri.rammal&#64;plantup.io</a></p>
             </div>
         </div>
     </div>
@@ -55,12 +57,23 @@
             <!-- Options Section -->
             <div class="col-md-6">
                 <div class="options-panel">
+                    <h3 class="mb-4">Conversion Options</h3>
                     <div class="row g-3">
+                        <!-- Width -->
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-center">
+                                <div class="form-check form-switch">
+                                    <label class="form-check-label">Width</label>
+                                </div>
+                                <input type="number" class="form-control form-control-sm" [(ngModel)]="options.Width" min="1">
+                            </div>
+                        </div>
+                        
                         <!-- FPS -->
                         <div class="col-md-6">
                             <div class="d-flex align-items-center">
-                                <div class="form-check me-2">
-                                    <input class="form-check-input" type="checkbox" [(ngModel)]="options.SetFps" id="setFps">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" role="switch" [(ngModel)]="options.SetFps" id="setFps">
                                     <label class="form-check-label" for="setFps">FPS</label>
                                 </div>
                                 <input type="number" class="form-control form-control-sm" [(ngModel)]="options.Fps" min="1"
@@ -68,20 +81,11 @@
                             </div>
                         </div>
 
-                        <!-- Width -->
-                        <div class="col-md-6">
-                            <div class="input-group input-group-sm">
-                                <span class="input-group-text">Width</span>
-                                <input type="number" class="form-control" [(ngModel)]="options.Width" min="1">
-                            </div>
-                        </div>
-
                         <!-- Speed -->
                         <div class="col-md-6">
                             <div class="d-flex align-items-center">
-                                <div class="form-check me-2">
-                                    <input class="form-check-input" type="checkbox" [(ngModel)]="options.SetSpeed"
-                                        id="setSpeed">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" role="switch" [(ngModel)]="options.SetSpeed" id="setSpeed">
                                     <label class="form-check-label" for="setSpeed">Speed</label>
                                 </div>
                                 <input type="number" class="form-control form-control-sm"
@@ -93,9 +97,8 @@
                         <!-- Compression -->
                         <div class="col-md-6">
                             <div class="d-flex align-items-center">
-                                <div class="form-check me-2">
-                                    <input class="form-check-input" type="checkbox" [(ngModel)]="options.SetCompression"
-                                        id="setCompression">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" role="switch" [(ngModel)]="options.SetCompression" id="setCompression">
                                     <label class="form-check-label" for="setCompression">Quality</label>
                                 </div>
                                 <input type="range" class="form-range" [(ngModel)]="options.CompressionLevel" min="1"
@@ -103,13 +106,12 @@
                             </div>
                         </div>
 
-                        <!-- Watermark -->
+                        <!-- Text -->
                         <div class="col-12">
                             <div class="d-flex align-items-center">
-                                <div class="form-check me-2">
-                                    <input class="form-check-input" type="checkbox" [(ngModel)]="options.SetWatermark"
-                                        id="setWatermark">
-                                    <label class="form-check-label" for="setWatermark">Watermark</label>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" role="switch" [(ngModel)]="options.SetWatermark" id="setWatermark">
+                                    <label class="form-check-label" for="setWatermark">Text</label>
                                 </div>
                                 <input type="text" class="form-control form-control-sm"
                                     [(ngModel)]="options.WatermarkText" placeholder="Watermark text"
@@ -117,25 +119,25 @@
                             </div>
                         </div>
 
-                        <!-- Reverse -->
-                        <div class="col-md-6">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" [(ngModel)]="options.SetReverse"
-                                    id="setReverse">
-                                <label class="form-check-label" for="setReverse">Reverse GIF</label>
-                            </div>
-                        </div>
-
                         <!-- Frame Reduction -->
                         <div class="col-md-6">
                             <div class="d-flex align-items-center">
-                                <div class="form-check me-2">
-                                    <input class="form-check-input" type="checkbox" [(ngModel)]="options.SetReduceFrames"
-                                        id="setReduceFrames">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" role="switch" [(ngModel)]="options.SetReduceFrames" id="setReduceFrames">
                                     <label class="form-check-label" for="setReduceFrames">Reduce</label>
                                 </div>
-                                <input type="number" class="form-control form-control-sm"
+                                <input type="number" class="form-control form-control-sm" placeholder="10"
                                     [(ngModel)]="options.FrameSkipInterval" min="2" [disabled]="!options.SetReduceFrames">
+                            </div>
+                        </div>
+
+                        <!-- Reverse -->
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-center">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" role="switch" [(ngModel)]="options.SetReverse" id="setReverse">
+                                    <label class="form-check-label" for="setReverse">Reverse GIF</label>
+                                </div>
                             </div>
                         </div>
                     </div>
