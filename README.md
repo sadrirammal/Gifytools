@@ -143,4 +143,11 @@ program.cs:
     var appDbConnectionString = builder.Configuration.GetConnectionString("AppDbConnectionString");
     builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(appDbConnectionString));
 
+
+## Frontend Setup
+1. ng add ngx-bootstrap
+2. ng add bootstrap (don't forget to add js and css in package.json)
+3. 
+
+
     
