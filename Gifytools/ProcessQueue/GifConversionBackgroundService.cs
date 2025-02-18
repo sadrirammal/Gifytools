@@ -20,7 +20,7 @@ public class GifConversionBackgroundService : BackgroundService
             int processedCount = await ProcessConversionRequests(stoppingToken);
 
             // Adjust delay dynamically: If we processed something, retry sooner; if nothing, wait longer.
-            int delayMs = processedCount > 0 ? 5 * 1000 : 60 * 1000; // 5s if work was done, else 60s
+            int delayMs = processedCount > 0 ? 5 * 1000 : 15 * 1000; // 5s if work was done, else 60s
             await Task.Delay(delayMs, stoppingToken);
         }
     }
