@@ -1,50 +1,83 @@
-<div class="modal-header bg-dark text-light d-flex align-items-center">
-  <h4 class="modal-title mb-0">
-    <i class="fas" [ngClass]="{
-      'fa-spinner fa-spin':  conversionStatus === 2,
-      'fa-check-circle': conversionStatus === 3,
-      'fa-exclamation-circle': conversionStatus === 4,
-      'fa-clock': conversionStatus === 1
+<!-- Modal Header -->
+<div class="modal-header d-flex align-items-center justify-content-between p-3 border-bottom-0">
+  <h4 class="modal-title mb-0 d-flex align-items-center">
+    <i class="status-icon fas me-3" [ngClass]="{
+      'fa-spinner fa-spin text-primary': conversionStatus === 2,
+      'fa-check-circle text-success': conversionStatus === 3,
+      'fa-exclamation-circle text-danger': conversionStatus === 4,
+      'fa-clock text-warning': conversionStatus === 1
     }"></i>
-    
+    <span [ngSwitch]="conversionStatus">
+      <ng-container *ngSwitchCase="1">Conversion Pending</ng-container>
+      <ng-container *ngSwitchCase="2">Converting...</ng-container>
+      <ng-container *ngSwitchCase="3">Conversion Complete</ng-container>
+      <ng-container *ngSwitchCase="4">Conversion Failed</ng-container>
+    </span>
   </h4>
+  <button type="button" class="btn-close btn-close-white" (click)="close()" [disabled]="isLoading"></button>
 </div>
 
-<div class="modal-body">
-  <div class="alert alert-danger" *ngIf="conversionErrorMessage">
-    <i class="fas fa-exclamation-triangle"></i> {{ conversionErrorMessage }}
+<!-- Modal Body -->
+<div class="modal-body py-3 px-4">
+  <!-- Error Message -->
+  <div class="alert alert-danger d-flex align-items-center p-2 mb-3" *ngIf="conversionErrorMessage">
+    <i class="fas fa-exclamation-triangle me-2"></i>
+    <span>{{ conversionErrorMessage }}</span>
   </div>
 
-  <div class="conversion-details text-muted" *ngIf="conversionStatus === 1">
-    <p>Conversion pending</p>
-  </div>
+  <!-- Conversion Status Messages -->
+  <div class="conversion-details" [ngSwitch]="conversionStatus">
+    <!-- Pending -->
+    <div class="status-box pending" *ngSwitchCase="1">
+      <p class="mb-2">Your conversion request is in queue. We'll start processing it shortly.</p>
+      <div class="progress">
+        <div class="progress-bar progress-bar-striped progress-bar-animated" 
+             role="progressbar" 
+             style="width: 25%">
+        </div>
+      </div>
+    </div>
 
-  <div class="conversion-details text-muted" *ngIf="conversionStatus === 2">
-    <p>Conversion started...</p>
-  </div>
+    <!-- Processing -->
+    <div class="status-box processing" *ngSwitchCase="2">
+      <p class="mb-2">Converting your file. This may take a few moments...</p>
+      <div class="progress">
+        <div class="progress-bar progress-bar-striped progress-bar-animated" 
+             role="progressbar" 
+             style="width: 75%">
+        </div>
+      </div>
+    </div>
 
-  <div class="conversion-details text-muted" *ngIf="conversionStatus === 3">
-    <p>Conversion finished</p>
-    <img *ngIf="generatedGifUrl" [src]="generatedGifUrl" alt="Converted GIF" style="max-width: 100%; height: auto;">
-  </div>
+    <!-- Complete -->
+    <div class="status-box complete" *ngSwitchCase="3">
+      <p class="text-success mb-2">Conversion completed successfully!</p>
+      <div class="preview-container mt-2" *ngIf="generatedGifUrl">
+        <img [src]="generatedGifUrl" 
+             alt="Converted GIF" 
+             class="preview-image">
+      </div>
+    </div>
 
-  <div class="conversion-details text-muted" *ngIf="conversionStatus === 4">
-    <p>Conversion pending</p>
+    <!-- Failed -->
+    <div class="status-box failed" *ngSwitchCase="4">
+      <p class="text-danger mb-0">Unable to complete the conversion. Please try again.</p>
+    </div>
   </div>
 </div>
 
-<div class="modal-footer bg-dark text-light">
+<!-- Modal Footer -->
+<div class="modal-footer border-top-0 py-3 px-4">
   <button type="button" 
-          class="btn btn-light" 
-          (click)="close()"
-          [disabled]="isLoading">
-    <i class="fas fa-times"></i> Close
+          class="btn btn-primary" 
+          (click)="close()">
+    <i class="fas fa-times me-2"></i>Close
   </button>
   
   <button type="button" 
           class="btn btn-success" 
           (click)="downloadGif()"
           *ngIf="generatedGifUrl">
-    <i class="fas fa-download"></i> Download
+    <i class="fas fa-download me-2"></i>Download GIF
   </button>
 </div>
