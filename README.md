@@ -126,3 +126,21 @@ sudo systemctl daemon-reload
 sudo systemctl enable cleanup.timer
 sudo systemctl start cleanup.timer
 
+
+## Backend setup
+In the Backend we have a rather simple asp.net 8 API. It uses Postgres and ef. After having done a load test of our 9 USD per month server we know we should be able to have 5 workers running at the same time. 
+We will need a process queue that will trigger the ffmpeg convert jobs. 
+
+### Setting up EF
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.0" />
+    
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.0">
+    
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.2" />
+
+program.cs:
+
+    var appDbConnectionString = builder.Configuration.GetConnectionString("AppDbConnectionString");
+    builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(appDbConnectionString));
+
+    
