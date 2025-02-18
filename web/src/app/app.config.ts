@@ -13,7 +13,6 @@ export const appConfig: ApplicationConfig = {
     provideClientHydration(),
     provideHttpClient(),
     provideAnimations(),
-
     //the fix from the docs https://valor-software.com/ngx-bootstrap/#/components/modals?tab=api
     BsModalService,
     {

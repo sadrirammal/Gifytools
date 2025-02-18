@@ -1,6 +1,6 @@
 // video-upload.component.ts
-import { CommonModule } from '@angular/common';
-import { Component, Inject } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { AfterViewInit, Component, Inject, PLATFORM_ID } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { LoadingModalComponent } from '../modals/loading-modal/loading-modal.component';
 import { GifConversionOptions } from '../../models/gif-converter-options.model';
@@ -14,7 +14,27 @@ import { BsModalService, BsModalRef, ModalModule } from 'ngx-bootstrap/modal';
   templateUrl: './video-upload.component.html',
   styleUrl: './video-upload.component.scss'
 })
-export class VideoUploadComponent {
+export class VideoUploadComponent implements AfterViewInit {
+  constructor(@Inject(PLATFORM_ID) private platformId: object, 
+  private videoUploadService: VideoUploadService, private modalService: BsModalService) {}
+
+  async ngAfterViewInit(): Promise<void> {
+    if (isPlatformBrowser(this.platformId)) {
+      try {
+        // ✅ Dynamically import Bootstrap (use default import)
+        const bootstrap = await import('bootstrap');
+
+        // ✅ Ensure tooltips work
+        const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+        tooltipTriggerList.forEach((tooltipTriggerEl) => {
+          new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+      } catch (error) {
+        console.error("Bootstrap failed to load:", error);
+      }
+    }
+  }
+
   selectedFile: File | null = null;
   isConverting: boolean = false;
   conversionId: string | null = null;
@@ -45,8 +65,6 @@ export class VideoUploadComponent {
     SetReduceFrames: false,
     FrameSkipInterval: 10,
   };
-  
-  constructor(private videoUploadService: VideoUploadService, private modalService: BsModalService) {}
 
   clearFile() {
     this.selectedFile = null;

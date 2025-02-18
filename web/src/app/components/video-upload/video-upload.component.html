@@ -120,10 +120,20 @@
                             <div class="d-flex align-items-center">
                                 <div class="form-check form-switch">
                                     <input class="form-check-input" type="checkbox" role="switch" [(ngModel)]="options.SetReduceFrames" id="setReduceFrames">
-                                    <label class="form-check-label" for="setReduceFrames">Reduce</label>
+                                    <label class="form-check-label" for="setReduceFrames" 
+                                        data-bs-toggle="tooltip" data-bs-placement="top" title="Reduces the number of frames by skipping every N (number of given) frames.">
+                                        <span>
+                                            Reduce <i class="fa-solid fa-circle-info ms-1 text-primary"></i>
+                                        </span>
+                                    </label>
                                 </div>
-                                <input type="number" class="form-control form-control-sm" placeholder="10"
-                                    [(ngModel)]="options.FrameSkipInterval" min="2" [disabled]="!options.SetReduceFrames">
+                            <!-- Input Field -->
+                            <input type="number" 
+                                class="form-control form-control-sm ms-2"
+                                placeholder="10"
+                                [(ngModel)]="options.FrameSkipInterval" 
+                                min="2" 
+                                [disabled]="!options.SetReduceFrames">
                             </div>
                         </div>
 
