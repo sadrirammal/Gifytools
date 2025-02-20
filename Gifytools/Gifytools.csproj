@@ -15,7 +15,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="gifOutput\" />
     <Folder Include="videoInput\" />
   </ItemGroup>
 
