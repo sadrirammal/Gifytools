@@ -109,6 +109,6 @@ export class VideoUploadComponent implements AfterViewInit {
         console.error('Upload error:', error);
         //TODO: add toast
       }
-    });
+    }).add(() => this.isConverting = false);
   }
 }
