@@ -9,8 +9,8 @@ import { ConversionStatusEnum } from '../models/conversion-status.enum';
 })
 export class VideoUploadService {
 
-  private api: string = "https://localhost:7143/api/gif";
-  // private api: string = "https://api.gifytools.com/api/gif";
+  // private api: string = "https://localhost:7143/api/gif";
+  private api: string = "https://api.gifytools.com/api/gif";
 
   constructor(private http: HttpClient) { }
 
