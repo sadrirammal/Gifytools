@@ -3,16 +3,15 @@
     <div class="hero-section">
         <div class="container">
             <div class="text-center">
-                <h1 class="main-title">GifyTools</h1>
-                <h2>Free Video to Gif converter</h2>
+                <h1 class="main-title">GifyTools - Convert Videos to GIFs Online</h1>
+                <h2>Free Video to GIF Converter | High-Quality & Fast</h2>
                 <p class="subtitle">
-                    Transform your 3D printer timelapses into eye-catching GIFs
-                    for seamless social media sharing. Simple, fast, and effective.
+                    Transform your videos and animations into eye-catching GIFs 
+                    for seamless social media sharing. Create optimized GIFs for Twitter, Instagram, Discord, 
+                    and Reddit in seconds. No watermark, no signup required.
                 </p>
 
-                <p class="red">WARNING: Currently there is no authentication enabled. The server auto deletes everything after 1h.</p>
-
-                <p>Let me know what you think: <a href="mailto:sadri.rammal&#64;plantup.io">sadri.rammal&#64;plantup.io</a></p>
+                <p>Questions or feedback? Contact: <a href="mailto:sadri.rammal&#64;plantup.io">sadri.rammal&#64;plantup.io</a></p>
             </div>
         </div>
     </div>
@@ -23,27 +22,26 @@
             <!-- Upload Section -->
             <div class="col-md-6 mb-3">
                 <div class="upload-content">
-
                     <!-- Upload Zone -->
                     <div *ngIf="!selectedFile" class="upload-zone text-center" (dragover)="onDragOver($event)" (drop)="onFileDropped($event)"
                         (click)="fileInput.click()">
                         <input #fileInput type="file" (change)="onFileSelected($event)" [hidden]="true"
                             accept="video/*,image/*" multiple>
                         <i class="fa-solid fa-file-arrow-up upload-icon"></i>
-                        <h4 class="mb-3">Drop your files here</h4>
-                        <p class="text-muted mb-0">or click to browse</p>
+                        <h4 class="mb-3">Drop your MP4, MOV, or AVI files here</h4>
+                        <p class="text-muted mb-0">or click to browse your videos</p>
                     </div>
 
                     <!-- Already uploaded -->
                     <div *ngIf="selectedFile" class="upload-zone text-center">
                         <i class="fa-solid fa-file upload-icon"></i>
-                        <h4 class="mb-3">Ready to convert</h4>
-                        <p class="text-muted mb-0"></p>
+                        <h4 class="mb-3">Ready to convert your video to GIF</h4>
+                        <p class="text-muted mb-0">Your file is ready for processing</p>
                     </div>
 
                     <div class="text-center mt-4">
                         <button class="btn btn-primary me-2" (click)="onUpload()" [disabled]="!selectedFile || isConverting">
-                            <span><i class="fa-solid fa-check"></i> Convert to Gif</span>
+                            <span><i class="fa-solid fa-check"></i> Convert to GIF Now</span>
                         </button>
                         <button class="btn btn-outline-secondary" (click)="clearFile()">
                             Clear
@@ -55,7 +53,7 @@
             <!-- Options Section -->
             <div class="col-md-6">
                 <div class="options-panel">
-                    <h3 class="mb-4">Conversion Options</h3>
+                    <h3 class="mb-4">GIF Conversion Options</h3>
                     <div class="row g-3">
                         <!-- Width -->
                         <div class="col-md-6">
@@ -112,7 +110,7 @@
                                     <label class="form-check-label" for="setWatermark">Text</label>
                                 </div>
                                 <input type="text" class="form-control form-control-sm"
-                                    [(ngModel)]="options.WatermarkText" placeholder="Watermark text"
+                                    [(ngModel)]="options.WatermarkText" placeholder="Add custom text to your GIF"
                                     [disabled]="!options.SetWatermark">
                             </div>
                         </div>
@@ -123,19 +121,19 @@
                                 <div class="form-check form-switch">
                                     <input class="form-check-input" type="checkbox" role="switch" [(ngModel)]="options.SetReduceFrames" id="setReduceFrames">
                                     <label class="form-check-label" for="setReduceFrames" 
-                                        data-bs-toggle="tooltip" data-bs-placement="top" title="Reduces the number of frames by skipping every N (number of given) frames.">
+                                        data-bs-toggle="tooltip" data-bs-placement="top" title="Reduces file size by skipping frames. Higher values create smaller files.">
                                         <span>
                                             Reduce <i class="fa-solid fa-circle-info ms-1 text-primary"></i>
                                         </span>
                                     </label>
                                 </div>
-                            <!-- Input Field -->
-                            <input type="number" 
-                                class="form-control form-control-sm ms-2"
-                                placeholder="10"
-                                [(ngModel)]="options.FrameSkipInterval" 
-                                min="2" 
-                                [disabled]="!options.SetReduceFrames">
+                                <!-- Input Field -->
+                                <input type="number" 
+                                    class="form-control form-control-sm ms-2"
+                                    placeholder="10"
+                                    [(ngModel)]="options.FrameSkipInterval" 
+                                    min="2" 
+                                    [disabled]="!options.SetReduceFrames">
                             </div>
                         </div>
 
@@ -149,6 +147,30 @@
                             </div>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Added SEO Content Section -->
+        <div class="row mt-5">
+            <div class="col-12">
+                <div class="seo-content p-4 rounded">
+                    <h2 class="fw-bold mb-3">Create Perfect GIFs from Videos in Seconds</h2>
+                    <p class="mb-4">
+                        GifyTools is your free online solution for converting videos to GIFs without losing quality. 
+                        Perfect for gaming clips, reaction GIFs, tutorials, short animations, and social media content. 
+                        Convert MP4, MOV, AVI, and other video formats to GIF with complete control over size, speed, 
+                        and quality.
+                    </p>
+                    
+                    <h3 class="fw-bold mb-3">Why Choose GifyTools for Video to GIF Conversion?</h3>
+                    <ul class="feature-list">
+                        <li><strong>100% Free:</strong> No hidden fees, subscriptions, or watermarks</li>
+                        <li><strong>Privacy First:</strong> Your files are processed in-browser and never uploaded to servers</li>
+                        <li><strong>Advanced Controls:</strong> Customize FPS, width, speed, and quality for perfect results</li>
+                        <li><strong>Optimized for Social:</strong> Create GIFs perfectly sized for Twitter, Instagram, Discord, and Reddit</li>
+                        <li><strong>Versatile Conversion:</strong> Optimized for all types of video content</li>
+                    </ul>
                 </div>
             </div>
         </div>

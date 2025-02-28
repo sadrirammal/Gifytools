@@ -1,30 +1,32 @@
 /* gify-tools.component.scss */
 .hero-section {
-  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  background: linear-gradient(135deg, #e8f0ff 0%, #d4deff 100%);
   padding: 4rem 0;
   border-radius: 0 0 2rem 2rem;
   margin-bottom: 3rem;
+  box-shadow: 0 4px 15px rgba(67, 97, 238, 0.08);
 }
 
 .upload-zone {
   background-color: #fff;
-  border: 2px dashed #dee2e6;
+  border: 2px dashed #c6cefb;
   border-radius: 1rem;
   padding: 3rem;
   transition: all 0.3s ease;
   cursor: pointer;
   max-width: 500px;
   margin: 0 auto;
+  box-shadow: 0 2px 10px rgba(67, 97, 238, 0.05);
 
   &:hover {
-      border-color: #0d6efd;
-      background-color: #f8f9fa;
+      border-color: #4361ee;
+      background-color: #f5f7ff;
   }
 }
 
 .upload-icon {
   font-size: 3rem;
-  color: #6c757d;
+  color: #4361ee;
   margin-bottom: 1rem;
 }
 
@@ -32,27 +34,74 @@
   font-weight: 700;
   color: #212529;
   margin-bottom: 1rem;
+  font-size: 2.5rem;
+}
+
+h2 {
+  font-weight: 600;
+  font-size: 1.5rem;
+  color: #495057;
+  margin-bottom: 1.5rem;
 }
 
 .subtitle {
   color: #6c757d;
-  max-width: 600px;
+  max-width: 700px;
   margin: 0 auto 2rem auto;
   line-height: 1.6;
+  font-size: 1.1rem;
+}
+
+.btn-primary {
+  background-color: #4361ee;
+  border-color: #4361ee;
+  padding: 0.5rem 1.5rem;
+  font-weight: 500;
+  box-shadow: 0 2px 5px rgba(67, 97, 238, 0.3);
+  transition: all 0.2s ease;
+  
+  &:hover {
+    background-color: #3a56d4;
+    border-color: #3145c5;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(67, 97, 238, 0.4);
+  }
+  
+  &:active {
+    transform: translateY(0);
+    box-shadow: 0 1px 3px rgba(67, 97, 238, 0.3);
+  }
+}
+
+.btn-outline-secondary {
+  border-color: #6c757d;
+  color: #6c757d;
+  padding: 0.5rem 1.5rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  
+  &:hover {
+    background-color: #6c757d;
+    color: white;
+  }
 }
 
 .options-panel {
-  background-color: #f8f9fa;
-  padding: 1.5rem;
+  background-color: #f8f9ff;
+  padding: 1.8rem;
   border-radius: 1rem;
   height: 100%;
   container-type: inline-size;
+  box-shadow: 0 2px 10px rgba(67, 97, 238, 0.05);
+  border: 1px solid #e6e9ff;
 
   h3 {
-      color: #212529;
+      color: #4361ee;
       font-size: 1.5rem;
       font-weight: 600;
       margin-bottom: 1.5rem;
+      border-bottom: 2px solid #d6dcfd;
+      padding-bottom: 0.8rem;
   }
 
   .row {
@@ -75,6 +124,8 @@
           
           .form-check-label {
               white-space: nowrap;
+              font-weight: 500;
+              color: #495057;
           }
       }
 
@@ -82,11 +133,67 @@
           min-width: 60px;
           width: 100%;
           height: 32px;
+          border-radius: 0.5rem;
+          border: 1px solid #ced4da;
+          
+          &:focus {
+              border-color: #b1bcfa;
+              box-shadow: 0 0 0 0.25rem rgba(67, 97, 238, 0.25);
+          }
       }
 
       .form-range {
           height: 32px;
           padding: 8px 0;
+      }
+      
+      .form-check-input {
+          &:checked {
+              background-color: #4361ee;
+              border-color: #4361ee;
+          }
+      }
+  }
+}
+
+.seo-content {
+  padding: 2rem;
+  background-color: #f5f7ff;
+  border-radius: 1rem;
+  margin-top: 2rem;
+  box-shadow: 0 2px 10px rgba(67, 97, 238, 0.05);
+  border-left: 4px solid #4361ee;
+  
+  h2 {
+      color: #212529;
+      font-size: 1.8rem;
+      font-weight: 700;
+      margin-bottom: 1.2rem;
+  }
+  
+  h3 {
+      color: #495057;
+      font-size: 1.3rem;
+      font-weight: 600;
+      margin: 1.5rem 0 1rem;
+  }
+  
+  p {
+      color: #6c757d;
+      line-height: 1.7;
+      margin-bottom: 1.5rem;
+  }
+  
+  .feature-list {
+      padding-left: 1.2rem;
+      
+      li {
+          margin-bottom: 0.8rem;
+          color: #495057;
+          
+          strong {
+              color: #212529;
+          }
       }
   }
 }
@@ -114,10 +221,42 @@
 
 // Responsive adjustments
 @media (max-width: 768px) {
+  .hero-section {
+    padding: 3rem 0;
+  }
+  
+  .main-title {
+    font-size: 2rem;
+  }
+  
+  h2 {
+    font-size: 1.3rem;
+  }
+  
+  .subtitle {
+    font-size: 1rem;
+  }
+  
   .options-panel {
       .col-md-6 {
           width: 100%;
       }
+      
+      h3 {
+        font-size: 1.3rem;
+      }
+  }
+  
+  .seo-content {
+    padding: 1.5rem;
+    
+    h2 {
+      font-size: 1.5rem;
+    }
+    
+    h3 {
+      font-size: 1.2rem;
+    }
   }
 }
 
