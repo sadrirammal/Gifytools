@@ -6,6 +6,39 @@
   <base href="/">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "GifyTools - Video to GIF Converter",
+      "url": "https://yourwebsite.com",
+      "applicationCategory": "MultimediaApplication",
+      "browserRequirements": "Requires JavaScript. Compatible with Chrome, Firefox, Safari, and Edge.",
+      "permissions": "Browser must support JavaScript and HTML5.",
+      "processorRequirements": "Minimal requirements as conversion runs on our server",
+      "memoryRequirements": "100mb max upload",
+      "offers": {
+        "@type": "Offer",
+        "price": "0.00",
+        "priceCurrency": "USD"
+      },
+      "creator": {
+        "@type": "Person",
+        "name": "Sadri Rammal"
+      },
+      "potentialAction": {
+        "@type": "ConvertAction",
+        "object": {
+          "@type": "MediaObject",
+          "encodingFormat": ["video/mp4", "video/mov", "video/avi"]
+        },
+        "result": {
+          "@type": "MediaObject",
+          "encodingFormat": "image/gif"
+        }
+      }
+    }
+    </script>
 </head>
 <body>
   <app-root></app-root>
