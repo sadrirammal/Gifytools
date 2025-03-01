@@ -1,7 +1,9 @@
 ﻿using Gifytools.Bll;
 using Gifytools.Database;
 using Gifytools.Database.Entities;
+using Gifytools.ProcessQueue;
 using Gifytools.Settings;
+using Hangfire;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -59,8 +61,10 @@ public class GifController : ControllerBase
         };
 
         await _appDbContext.ConversionRequests.AddAsync(entity);
-        
+
         await _appDbContext.SaveChangesAsync();
+        BackgroundJob.Enqueue<GifConversionWorker>(worker => worker.Execute(entity.Id));
+
         return Ok(entity.Id);
     }
 

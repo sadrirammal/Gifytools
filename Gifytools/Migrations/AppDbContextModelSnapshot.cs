@@ -115,7 +115,7 @@ namespace Gifytools.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ConversionRequests");
+                    b.ToTable("ConversionRequests", (string)null);
                 });
 #pragma warning restore 612, 618
         }

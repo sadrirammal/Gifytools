@@ -3,6 +3,7 @@ using Gifytools.Database;
 using Gifytools.ProcessQueue;
 using Gifytools.Settings;
 using Microsoft.EntityFrameworkCore;
+using Plantup.Hangfire.Hangfire;
 using Plantup.Swagger.Swagger;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -22,6 +23,8 @@ var appDbConnectionString = builder.Configuration.GetConnectionString("AppDbCont
 
 builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(appDbConnectionString));
 
+builder.Services.AddPlantupHangfire(builder.Configuration, appDbConnectionString);
+
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -38,9 +41,9 @@ builder.WebHost.ConfigureKestrel(serverOptions =>
     serverOptions.Limits.MaxRequestBodySize = 100_000_000; // 100MB
 });
 
-builder.Services.AddHostedService<GifConversionBackgroundService>();
-
 var app = builder.Build();
+
+app.UsePlantupHangfireDashboard(builder.Configuration);
 
 // Configure the HTTP request pipeline.
 app.UsePlantupSwaggerUi();
