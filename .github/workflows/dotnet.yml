@@ -55,9 +55,9 @@ jobs:
           host: ${{ secrets.SERVER_IP }}
           password: ${{ secrets.SERVER_PASSWORD }}  # Using password instead of SSH key
           username: ${{ secrets.SSH_USERNAME }}
-          source: "/home/runner/work/Gifytools/Gifytools/release/*"
+          source: "./release/*"
           target: "/opt/dotnet"
-          strip_components: 3
+          strip_components: 1
           rm: true  # Consider cleaning the remote directory before uploading new files if that's desirable
           debug: true  # Keep this only if necessary for debugging
 
