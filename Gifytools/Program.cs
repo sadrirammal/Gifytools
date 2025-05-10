@@ -19,6 +19,8 @@ builder.Services.AddCors(options =>
                 .AllowAnyMethod(); 
         });
 });
+
+//Run pipeline
 var appDbConnectionString = builder.Configuration.GetConnectionString("AppDbContextConnection");
 
 builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(appDbConnectionString));
