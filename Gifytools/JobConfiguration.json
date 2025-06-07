@@ -1,3 +1,9 @@
 ﻿[
-
+    {
+        "job-name": "AutomaticDeletionJob",
+        "job-type": "Gifytools.Jobs.AutomaticDeletionJob, Gifytools",
+        "cron-expression": "0 0 * * *",
+        "queue": "default",
+        "time-zone": "UTC"
+    }
 ]
