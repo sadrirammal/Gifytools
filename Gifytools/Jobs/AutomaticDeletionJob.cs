@@ -20,7 +20,6 @@ public class AutomaticDeletionJob : IRecurringJob
     public void Execute(PerformContext context)
     {
         AsyncHelper.RunSync(() => ExecuteAsync(context));
-        throw new NotImplementedException();
     }
 
     public async Task ExecuteAsync(PerformContext context)

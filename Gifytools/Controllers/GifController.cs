@@ -25,6 +25,8 @@ public class GifController : ControllerBase
     [HttpPost("ConversionRequest")]
     public async Task<ActionResult<Guid>> ScheduleGif([FromForm] GifConversionOptions options)
     {
+        var ip = HttpContext?.Connection?.RemoteIpAddress?.ToString();
+
         if (options.VideoFile == null || options.VideoFile.Length == 0)
         {
             return BadRequest("No file uploaded.");
@@ -57,7 +59,8 @@ public class GifController : ControllerBase
             CompressionLevel = options.CompressionLevel,
             SetReduceFrames = options.SetReduceFrames,
             FrameSkipInterval = options.FrameSkipInterval,
-            ConversionStatus = ConversionStatusEnum.Pending
+            ConversionStatus = ConversionStatusEnum.Pending,
+            IpAddress = ip
         };
 
         await _appDbContext.ConversionRequests.AddAsync(entity);

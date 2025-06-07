@@ -35,6 +35,7 @@ public class ConversionRequestEntity
     public int FrameSkipInterval { get; set; }
     public ConversionStatusEnum ConversionStatus { get; set; } = ConversionStatusEnum.Pending;
     public string? ErrorMessage { get; set; }
+    public string? IpAddress { get; set; }
 }
 
 public enum ConversionStatusEnum
