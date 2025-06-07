@@ -27,6 +27,22 @@ public class GifController : ControllerBase
     {
         var ip = HttpContext?.Connection?.RemoteIpAddress?.ToString();
 
+        try
+        {
+            if (Request.Headers.ContainsKey("X-Forwarded-For"))
+            {
+                var forwardedFor = Request.Headers["X-Forwarded-For"].ToString();
+                // If there are multiple IPs, take the first one
+                ip = forwardedFor.Split(',')[0];
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error retrieving forwarded IP: {ex.Message}");
+            // Fallback to the original IP if there's an error
+            ip = "Error getting ip: " + ex.Message;
+        }
+
         if (options.VideoFile == null || options.VideoFile.Length == 0)
         {
             return BadRequest("No file uploaded.");
