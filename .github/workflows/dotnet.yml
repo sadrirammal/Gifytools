@@ -56,7 +56,7 @@ jobs:
           password: ${{ secrets.SERVER_PASSWORD }}  # Using password instead of SSH key
           username: ${{ secrets.SSH_USERNAME }}
           source: "./release/*"
-          target: "/opt/dotnet"
+          target: "/opt/dotnet/gifytools"
           strip_components: 1
           rm: true  # Consider cleaning the remote directory before uploading new files if that's desirable
           debug: true  # Keep this only if necessary for debugging
