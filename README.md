@@ -34,6 +34,12 @@ Processing: Processing done via library and direct process call.
 4. systemctl start Gifytools
 5. systemctl enable Gifytools
 
+## Configuring SSH Key login
+1. ssh-keygen -t ed25519 -f ~/.ssh/github_deploy_key
+2. cat github_deploy_key >> authorized_key
+3. chmod 700 ~/.ssh
+4. chmod 600 ~/.ssh/authorized_key
+
 ### Service contents:
 
   GNU nano 8.1                            /etc/systemd/system/Gifytools.service                                     
