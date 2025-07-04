@@ -84,53 +84,8 @@ sudo ln -s /etc/nginx/sites-available/www /etc/nginx/sites-enabled/
 6. sudo systemctl restart nginx
 
 ### Automatically deleting videos and gifs
-In order to automatically delete all videos and gifs we are going to use a very simple approach. we just delete all files older than 1h in our output folders.
-
-1. sudo nano /usr/local/bin/cleanup.sh
-   #!/bin/bash
-
-# Directories to clean
-DIRS=(
-    "/opt/gifytools/videoInput"
-    "/opt/gifytools/gifOutput"
-)
-
-# Delete all files older than 1 hour in each directory
-for DIR in "${DIRS[@]}"; do
-    if [ -d "$DIR" ]; then
-        find "$DIR" -type f -mmin +60 -delete
-    fi
-done
-
-2. sudo chmod +x /usr/local/bin/cleanup.sh
-3. sudo nano /etc/systemd/system/cleanup.service
-[Unit]
-Description=Cleanup old files in videoInput and gifOutput
-After=network.target
-
-[Service]
-Type=oneshot
-ExecStart=/usr/local/bin/cleanup.sh
-User=root
-
-[Install]
-WantedBy=multi-user.target
-
-4. sudo nano /etc/systemd/system/cleanup.timer
-[Unit]
-Description=Run Cleanup Service Every Minute
-
-[Timer]
-OnBootSec=1min
-OnUnitActiveSec=1min
-Persistent=true
-
-[Install]
-WantedBy=timers.target
-
-sudo systemctl daemon-reload
-sudo systemctl enable cleanup.timer
-sudo systemctl start cleanup.timer
+DELETED
+Simply added hangfire job to delete 7 day old shit
 
 
 ## Backend setup
