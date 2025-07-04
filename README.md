@@ -36,7 +36,7 @@ Processing: Processing done via library and direct process call.
 
 ## Configuring SSH Key login
 1. ssh-keygen -t ed25519 -f ~/.ssh/github_deploy_key
-2. cat github_deploy_key >> authorized_key
+2. cat github_deploy_key.pub >> ~/.ssh/authorized_keys
 3. chmod 700 ~/.ssh
 4. chmod 600 ~/.ssh/authorized_key
 
