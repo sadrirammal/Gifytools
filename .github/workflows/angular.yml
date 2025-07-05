@@ -72,7 +72,7 @@ jobs:
           username: ${{ secrets.SSH_USERNAME }}
           password: ${{ secrets.SERVER_PASSWORD }}
           source: "web/dist/web/*"  # ✅ Corrected path
-          target: "/var/www/html/web/gfiytools"
+          target: "/var/www/html/web/gifytools"
           strip_components: 3
           rm: true
 
