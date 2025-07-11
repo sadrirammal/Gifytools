@@ -8,11 +8,18 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<PackageReference Include="Microsoft.Extensions.Hosting.Systemd" Version="9.0.7" />
+		<PackageReference Include="Npgsql.OpenTelemetry" Version="9.0.3" />
+		<PackageReference Include="OpenTelemetry.Exporter.Console" Version="1.12.0" />
+		<PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="1.12.0" />
+		<PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.12.0" />
+		<PackageReference Include="OpenTelemetry.Instrumentation.Hangfire" Version="1.12.0-beta.1" />
 		<PackageReference Include="Plantup.Swagger" Version="1.0.0" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.0" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.0" />
 		<PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.2" />
 		<PackageReference Include="Plantup.Hangfire" Version="1.0.1" />
+		<PackageReference Include="System.Diagnostics.DiagnosticSource" Version="9.0.7" />
 	</ItemGroup>
 
   <ItemGroup>

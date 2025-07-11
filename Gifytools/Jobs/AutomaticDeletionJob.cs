@@ -11,10 +11,12 @@ public class AutomaticDeletionJob : IRecurringJob
 {
 
     private readonly AppDbContext _appDbContext;
+    private readonly ILogger<AutomaticDeletionJob> _logger;
 
-    public AutomaticDeletionJob(AppDbContext appDbContext)
+    public AutomaticDeletionJob(AppDbContext appDbContext, ILogger<AutomaticDeletionJob> logger)
     {
         _appDbContext = appDbContext;
+        _logger = logger;
     }
 
     public void Execute(PerformContext context)
@@ -24,6 +26,7 @@ public class AutomaticDeletionJob : IRecurringJob
 
     public async Task ExecuteAsync(PerformContext context)
     {
+        _logger.LogInformation("Executing job {job}", nameof(AutomaticDeletionJob));
         const int daysToKeep = 7;
 
         var conversionRequests = await _appDbContext.ConversionRequests
@@ -47,6 +50,7 @@ public class AutomaticDeletionJob : IRecurringJob
             }
             catch(Exception ex)
             {
+                _logger.LogError(ex, "Error deleting files for {conversionRequest}", conversionRequest.Id);
                 context.WriteLine($"Failed to delete files for conversion request {conversionRequest.Id}. Because of {ex.Message} {ex.InnerException}");
             }
 

@@ -1,4 +1,5 @@
 ﻿using Gifytools.Database.Entities;
+using Gifytools.Diagnostics;
 using Gifytools.Settings;
 using Microsoft.Extensions.Options;
 using System.Diagnostics;
@@ -10,9 +11,11 @@ namespace Gifytools.Bll;
 public class VideoToGifService : IVideoToGifService
 {
     private readonly FileSystemSettings _settings;
+    private readonly GifyMetrics _metrics;
+    private readonly ILogger<VideoToGifService> _logger;
 
     // Constructor to set the path to ffmpeg
-    public VideoToGifService(IOptions<FileSystemSettings> settings)
+    public VideoToGifService(IOptions<FileSystemSettings> settings, GifyMetrics metrics, ILogger<VideoToGifService> logger)
     {
         _settings = settings.Value;
         if (string.IsNullOrEmpty(_settings.FFmpegPath) || !File.Exists(_settings.FFmpegPath))
@@ -23,17 +26,23 @@ public class VideoToGifService : IVideoToGifService
         //Create directories if they dont exist
         if (!Directory.Exists(_settings.VideoInputPath))
         {
+            logger.LogInformation("{inputPathName} {inputPath} does not exist, creating it.", nameof(_settings.VideoInputPath), _settings.VideoInputPath);
             Directory.CreateDirectory(_settings.VideoInputPath);
         }
 
         if (!Directory.Exists(_settings.GifOutputPath))
         {
+            logger.LogInformation("{outputPathName} {outputPath} does not exist, creating it.", nameof(_settings.GifOutputPath), _settings.GifOutputPath);
             Directory.CreateDirectory(_settings.GifOutputPath);
         }
+
+        _metrics = metrics;
+        _logger = logger;
     }
 
     public async Task<string> ConvertToGif(ConversionRequestEntity entity)
     {
+        var activity = Activity.Current;
         if (string.IsNullOrEmpty(entity.VideoInputPath) || !File.Exists(entity.VideoInputPath))
         {
             throw new ArgumentException("Input video file does not exist.", nameof(entity.VideoInputPath));
@@ -126,6 +135,7 @@ public class VideoToGifService : IVideoToGifService
         ffmpegArgs.Add("-c:v");
         ffmpegArgs.Add("gif");
         ffmpegArgs.Add(fullOutputPath);
+        _logger.LogDebug("FFmpeg arguments: {args}", string.Join(' ', ffmpegArgs));
 
         await RunFFmpegCommandAsync(ffmpegArgs, 600000);
         return fullOutputPath;
@@ -134,15 +144,18 @@ public class VideoToGifService : IVideoToGifService
 
     public async Task<string> UploadVideo(IFormFile videoFile)
     {
+        using var uploadActivity = GifyMetrics.GifytoolsActivitySource.StartActivity("Gifytools.UploadVideo");
         var uploadFolder = Path.Combine(Directory.GetCurrentDirectory(), _settings.VideoInputPath);
         var fileName = $"{Path.GetFileNameWithoutExtension(videoFile.FileName)}_{DateTime.UtcNow:yyyyMMdd_HHmmss}{Path.GetExtension(videoFile.FileName)}";
         var fullPath = Path.Combine(uploadFolder, fileName);
-
+        uploadActivity?.SetCustomProperty(nameof(fullPath), fullPath);
         using (var stream = new FileStream(fullPath, FileMode.Create))
         {
             await videoFile.CopyToAsync(stream);
         }
 
+        _metrics.VideoUploaded(new FileInfo(fullPath).Length);
+        uploadActivity?.SetStatus(ActivityStatusCode.Ok);
         return fullPath;
     }
 
@@ -157,6 +170,7 @@ public class VideoToGifService : IVideoToGifService
     /// <exception cref="InvalidOperationException"></exception>
     private async Task RunFFmpegCommandAsync(List<string> arguments, int timeoutMs = 30000, CancellationToken cancellationToken = default)
     {
+        using var ffmpegActivity = GifyMetrics.GifytoolsActivitySource.StartActivity("Gifytools.Ffmpeg", ActivityKind.Client);
         using var process = new Process
         {
             StartInfo = new ProcessStartInfo
@@ -169,7 +183,8 @@ public class VideoToGifService : IVideoToGifService
             },
             EnableRaisingEvents = true
         };
-
+        ffmpegActivity?.SetCustomProperty("path", _settings.FFmpegPath);
+        ffmpegActivity?.SetCustomProperty("args", string.Join(' ', arguments));
         foreach (var arg in arguments)
         {
             process.StartInfo.ArgumentList.Add(arg);
@@ -211,17 +226,27 @@ public class VideoToGifService : IVideoToGifService
             if (!process.HasExited)
             {
                 process.Kill(true);
-                throw new TimeoutException($"FFmpeg process timed out after {timeoutMs} ms.");
+                
+                
+                var ex = new TimeoutException($"FFmpeg process timed out after {timeoutMs} ms.");
+                ffmpegActivity?.SetStatus(ActivityStatusCode.Error);
+                ffmpegActivity?.AddException(ex);
+                throw ex;
             }
         }
         catch (OperationCanceledException) when (timeoutCts.Token.IsCancellationRequested)
         {
             process.Kill(true);
-            throw new TimeoutException($"FFmpeg process timed out after {timeoutMs} ms.");
+            var ex = new TimeoutException($"FFmpeg process timed out after {timeoutMs} ms.");
+            ffmpegActivity?.SetStatus(ActivityStatusCode.Error);
+            ffmpegActivity?.AddException(ex);
+            throw ex;
         }
-        catch (OperationCanceledException)
+        catch (OperationCanceledException ex)
         {
             process.Kill(true);
+            ffmpegActivity?.SetStatus(ActivityStatusCode.Error);
+            ffmpegActivity?.AddException(ex);
             throw;
         }
 
@@ -230,7 +255,11 @@ public class VideoToGifService : IVideoToGifService
 
         if (process.ExitCode != 0)
         {
-            throw new InvalidOperationException($"FFmpeg command failed.\\nError: {error}\\nOutput: {output}");
+           var ex = new InvalidOperationException($"FFmpeg command failed.\\nError: {error}\\nOutput: {output}");
+            ffmpegActivity?.SetStatus(ActivityStatusCode.Error);
+            ffmpegActivity?.AddException(ex);
+            throw ex;
         }
+        ffmpegActivity?.SetStatus(ActivityStatusCode.Ok);
     }
 }
