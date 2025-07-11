@@ -38,13 +38,13 @@ public class VideoToGifService : IVideoToGifService
         {
             throw new ArgumentException("Input video file does not exist.", nameof(entity.VideoInputPath));
         }
-
         if (string.IsNullOrEmpty(_settings.GifOutputPath))
         {
             throw new ArgumentException("Output path is invalid.", nameof(_settings.GifOutputPath));
         }
 
-        var fullOutputPath = Path.Combine(Directory.GetCurrentDirectory(), _settings.GifOutputPath, $"{Path.GetFileNameWithoutExtension(entity.VideoInputPath)}_{DateTime.UtcNow:yyyyMMdd_HHmmss}.gif");
+        var fullOutputPath = Path.Combine(Directory.GetCurrentDirectory(), _settings.GifOutputPath,
+            $"{Path.GetFileNameWithoutExtension(entity.VideoInputPath)}_{DateTime.UtcNow:yyyyMMdd_HHmmss}.gif");
 
         var ffmpegArgs = new List<string>();
         ffmpegArgs.Add("-i");
@@ -55,6 +55,7 @@ public class VideoToGifService : IVideoToGifService
             ffmpegArgs.Add("-ss");
             ffmpegArgs.Add(entity.StartTime?.ToString() ?? "0");
         }
+
         if (entity.SetEndTime)
         {
             ffmpegArgs.Add("-to");
@@ -74,6 +75,7 @@ public class VideoToGifService : IVideoToGifService
             ffmpegArgs.Add($"setpts={speedFactor}*PTS");
         }
 
+        // Build the complete filter chain
         var filterList = new List<string>();
 
         if (entity.SetCrop)
@@ -97,20 +99,28 @@ public class VideoToGifService : IVideoToGifService
         {
             string sanitizedText = Regex.Replace(entity.WatermarkText, "[^a-zA-Z0-9 .,!?@#%&*()_+=-]", "");
             var fontPath = _settings.Fonts.FirstOrDefault(x => x.Name == entity.WatermarkFont)?.Path ??
-                           _settings.Fonts.First().Path;
+                          _settings.Fonts.First().Path;
             filterList.Add($"drawtext=text='{sanitizedText}':fontfile='{fontPath}':fontcolor=white:fontsize=24:x=10:y=10");
         }
 
-        if (filterList.Any())
-        {
-            ffmpegArgs.Add("-vf");
-            ffmpegArgs.Add(string.Join(",", filterList));
-        }
-
+        // Handle compression with palette generation using filter_complex
         if (entity.SetCompression)
         {
+            // Use filter_complex for everything when compression is enabled
+            string videoFilters = string.Join(",", filterList);
+            string complexFilter = $"[0:v] {videoFilters} [v1]; [0:v] {videoFilters},palettegen=stats_mode=diff [p]; [v1][p] paletteuse=dither=none";
+
             ffmpegArgs.Add("-filter_complex");
-            ffmpegArgs.Add("[0:v] palettegen=stats_mode=diff [p]; [0:v][p] paletteuse=dither=none");
+            ffmpegArgs.Add(complexFilter);
+        }
+        else
+        {
+            // Use simple video filter when no compression
+            if (filterList.Any())
+            {
+                ffmpegArgs.Add("-vf");
+                ffmpegArgs.Add(string.Join(",", filterList));
+            }
         }
 
         ffmpegArgs.Add("-c:v");
@@ -118,7 +128,6 @@ public class VideoToGifService : IVideoToGifService
         ffmpegArgs.Add(fullOutputPath);
 
         await RunFFmpegCommandAsync(ffmpegArgs, 600000);
-
         return fullOutputPath;
     }
 
