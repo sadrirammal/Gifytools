@@ -2,9 +2,7 @@
 using Gifytools.Database;
 using Gifytools.Database.Entities;
 using Gifytools.ProcessQueue;
-using Gifytools.Settings;
 using Hangfire;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -15,11 +13,13 @@ public class GifController : ControllerBase
 {
     private readonly IVideoToGifService _videoToGifService;
     private readonly AppDbContext _appDbContext;
+    private readonly ILogger<GifController> _logger;
 
-    public GifController(IVideoToGifService videoToGifService, AppDbContext appDbContext)
+    public GifController(IVideoToGifService videoToGifService, AppDbContext appDbContext, ILogger<GifController> logger)
     {
         _videoToGifService = videoToGifService;
         _appDbContext = appDbContext;
+        _logger = logger;
     }
 
     [HttpPost("ConversionRequest")]
@@ -29,16 +29,16 @@ public class GifController : ControllerBase
 
         try
         {
-            if (Request.Headers.ContainsKey("X-Forwarded-For"))
+            if (Request.Headers.TryGetValue("X-Forwarded-For", out var value))
             {
-                var forwardedFor = Request.Headers["X-Forwarded-For"].ToString();
+                var forwardedFor = value.ToString();
                 // If there are multiple IPs, take the first one
                 ip = forwardedFor.Split(',')[0];
             }
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error retrieving forwarded IP: {ex.Message}");
+            _logger.LogError(ex, "Error retrieving forwarded IP");
             // Fallback to the original IP if there's an error
             ip = "Error getting ip: " + ex.Message;
         }
