@@ -103,12 +103,6 @@ public class VideoToGifService : IVideoToGifService
 			ffmpegArgs.Add(entity.Fps.ToString());
 		}
 
-		if (entity.SetSpeed && entity.SpeedMultiplier > 0)
-		{
-			double speedFactor = 1 / entity.SpeedMultiplier;
-			ffmpegArgs.Add("-filter:v");
-			ffmpegArgs.Add($"setpts={speedFactor}*PTS");
-		}
 
 		return ffmpegArgs;
 	}
@@ -127,6 +121,12 @@ public class VideoToGifService : IVideoToGifService
 		if (entity.SetReduceFrames)
 		{
 			filterList.Add($"fps={entity.FrameSkipInterval}");
+		}
+
+		if (entity.SetSpeed && entity.SpeedMultiplier > 0)
+		{
+			double speedFactor = 1 / entity.SpeedMultiplier;
+			filterList.Add($"setpts={speedFactor}*PTS");
 		}
 
 		if (entity.SetReverse)
