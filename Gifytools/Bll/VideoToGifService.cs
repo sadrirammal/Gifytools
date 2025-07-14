@@ -75,7 +75,7 @@ public class VideoToGifService : IVideoToGifService
 		ffmpegArgs.Add("gif");
 		ffmpegArgs.Add(fullOutputPath);
 
-		await RunFFmpegCommandAsync(ffmpegArgs, 600000);
+		await RunFFmpegCommandAsync(ffmpegArgs, 60000);
 		return fullOutputPath;
 	}
 
