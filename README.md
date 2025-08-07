@@ -40,6 +40,16 @@ Processing: Processing done via library and direct process call.
 3. chmod 700 ~/.ssh
 4. chmod 600 ~/.ssh/authorized_key
 
+### Disable SSH Password
+**DUDE IF YOU DON'T HAVE THE SSH KEY SETUP DONE THIS WILL LOCK YOU OUT OF YOU DROPLET**
+1. nano /etc/ssh/sshd_config
+2. add this
+3. PasswordAuthentication no
+UsePAM yes
+PubkeyAuthentication yes
+4. sudo systemctl reload ssh
+
+
 ### Service contents:
 
   GNU nano 8.1                            /etc/systemd/system/Gifytools.service                                     
