@@ -66,7 +66,7 @@ jobs:
         with: 
           host: ${{ secrets.SERVER_IP }}
           username: ${{ secrets.SSH_USERNAME }}
-          password: ${{ secrets.SERVER_PASSWORD }}  # Using password instead of SSH key
+          key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
             systemctl daemon-reload
             systemctl restart Gifytools.service
