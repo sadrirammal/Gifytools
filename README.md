@@ -49,6 +49,16 @@ UsePAM yes
 PubkeyAuthentication yes
 4. sudo systemctl reload ssh
 
+### Install and Enable fail to ban
+SSH gets bruteforced all the fucking time to the point that it actually uses 3-5% CPU.
+Follow these steps to ban the bots:
+
+1. sudo apt install fail2ban -y
+2. sudo systemctl enable fail2ban
+3. sudo systemctl start fail2ban
+4. sudo systemctl status fail2ban
+5. sudo fail2ban-client status sshd
+
 
 ### Service contents:
 
