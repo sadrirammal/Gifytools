@@ -79,7 +79,7 @@ backend  = systemd
 port     = 22
 logpath  = %(sshd_log)s
 ```
-
+sudo systemctl restart fail2ban
 
 ### Service contents:
 
