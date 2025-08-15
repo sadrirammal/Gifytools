@@ -116,20 +116,7 @@ ignoreregex =
 [ufw-scan]
 enabled  = true
 filter   = ufw-scan
-logpath  = /var/log/ufw.log
-backend  = auto
-maxretry = 3
-findtime = 300      # 5 minutes
-bantime  = 1d
-banaction = ufw
-
-# Use this if the upper dosn't work
-# In /etc/fail2ban/jail.d/ufw-scan.local
-[ufw-scan]
-enabled  = true
-filter   = ufw-scan
 backend  = systemd
-# important: remove any existing `logpath = ...` line
 banaction = ufw
 maxretry  = 3
 findtime  = 300
