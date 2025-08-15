@@ -128,6 +128,9 @@ banaction = ufw
 4. sudo systemctl restart fail2ban
 5. sudo fail2ban-client status ufw-scan # This is to verify that the mf's are getting blocked.
 
+Getting logs if config fails:
+ sudo journalctl -u fail2ban --no-pager -xe
+
 
 ### Service contents:
 
