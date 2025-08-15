@@ -43,11 +43,29 @@ Processing: Processing done via library and direct process call.
 ### Disable SSH Password
 **DUDE IF YOU DON'T HAVE THE SSH KEY SETUP DONE THIS WILL LOCK YOU OUT OF YOU DROPLET**
 1. nano /etc/ssh/sshd_config
-2. add this
-3. PasswordAuthentication no
-UsePAM yes
+```
+# Keep root, but keys only (no passwords)
+PermitRootLogin prohibit-password
 PubkeyAuthentication yes
-4. sudo systemctl reload ssh
+PasswordAuthentication no
+KbdInteractiveAuthentication no
+ChallengeResponseAuthentication no
+UsePAM yes
+
+# Make brute force harder
+LoginGraceTime 30s
+MaxAuthTries 3
+MaxSessions 10
+
+# Optional: disable X11 on a server
+X11Forwarding no
+
+# (Optional) restrict SSH to specific users
+# AllowUsers root
+```
+2. sudo sshd -t        # syntax check; no output = OK
+3. sudo systemctl reload ssh
+
 
 ### Install and Enable Fail2Ban
 SSH gets bruteforced all the fucking time to the point that it actually uses 3-5% CPU.
