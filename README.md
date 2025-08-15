@@ -99,6 +99,36 @@ logpath  = %(sshd_log)s
 ```
 sudo systemctl restart fail2ban
 
+##### Further config of Fail2Ban
+If you checkout logs you will notice that we are permanently getting port scanned by botnets. To prevent them from even getting basic info we will ban them.
+
+1. Create a custom Filter
+sudo nano /etc/fail2ban/filter.d/ufw-scan.conf
+
+```
+[Definition]
+failregex = \[UFW BLOCK\].*SRC=<HOST>
+ignoreregex =
+```
+
+2. sudo nano /etc/fail2ban/jail.d/ufw-scan.local
+```
+[ufw-scan]
+enabled  = true
+filter   = ufw-scan
+logpath  = /var/log/ufw.log
+backend  = auto
+maxretry = 1
+findtime = 600
+bantime  = 1d
+banaction = ufw
+```
+
+3. sudo ufw logging on
+4. sudo systemctl restart fail2ban
+5. sudo fail2ban-client status ufw-scan # This is to verify that the mf's are getting blocked.
+
+
 ### Service contents:
 
   GNU nano 8.1                            /etc/systemd/system/Gifytools.service                                     
