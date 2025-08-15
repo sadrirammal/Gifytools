@@ -49,7 +49,7 @@ UsePAM yes
 PubkeyAuthentication yes
 4. sudo systemctl reload ssh
 
-### Install and Enable fail to ban
+### Install and Enable Fail2Ban
 SSH gets bruteforced all the fucking time to the point that it actually uses 3-5% CPU.
 Follow these steps to ban the bots:
 
@@ -58,6 +58,27 @@ Follow these steps to ban the bots:
 3. sudo systemctl start fail2ban
 4. sudo systemctl status fail2ban
 5. sudo fail2ban-client status sshd
+
+#### Configuring Fail2Ban
+nano /etc/fail2ban/jail.d/sshd.local
+```
+[DEFAULT]
+bantime = 12h
+findtime = 10m
+maxretry = 4
+# (Optional, but great) exponential backoff for repeat offenders
+bantime.increment = true
+bantime.factor    = 2
+bantime.formula   = bantime * (1 + factor ** (failures - 1))
+bantime.overalljails = true
+bantime.rndtime   = 10m
+
+[sshd]
+enabled  = true
+backend  = systemd
+port     = 22
+logpath  = %(sshd_log)s
+```
 
 
 ### Service contents:
