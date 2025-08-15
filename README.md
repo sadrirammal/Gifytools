@@ -195,8 +195,6 @@ program.cs:
 
 
 ## Frontend Setup
+Gifytools runs a simple angular app. I'm not the biggest fan of frontend work so Its a functional frontend without any bells and whistles.
 1. npm install
 2. ng s -o
-
-
-    
