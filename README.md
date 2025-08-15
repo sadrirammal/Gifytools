@@ -118,8 +118,8 @@ enabled  = true
 filter   = ufw-scan
 logpath  = /var/log/ufw.log
 backend  = auto
-maxretry = 1
-findtime = 600
+maxretry = 3
+findtime = 300      # 5 minutes
 bantime  = 1d
 banaction = ufw
 ```
