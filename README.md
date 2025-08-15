@@ -165,9 +165,8 @@ program.cs:
 
 
 ## Frontend Setup
-1. ng add ngx-bootstrap
-2. ng add bootstrap (don't forget to add js and css in package.json)
-3. 
+1. npm install
+2. ng s -o
 
 
     
