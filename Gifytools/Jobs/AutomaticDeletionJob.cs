@@ -27,9 +27,10 @@ public class AutomaticDeletionJob : IRecurringJob
         const int daysToKeep = 7;
 
         var conversionRequests = await _appDbContext.ConversionRequests
-            .Where(x => x.CreateDate < DateTime.UtcNow.AddDays(-daysToKeep))
-            .OrderByDescending(x => x.CreateDate)
-            .ToListAsync();
+                                                    .Where(x => x.CreateDate < DateTime.UtcNow.AddDays(-daysToKeep))
+                                                    .OrderByDescending(x => x.CreateDate)
+                                                    .Select(x => new { x.Id, x.VideoInputPath, x.GifOutputPath })
+                                                    .ToListAsync();
 
         foreach(var conversionRequest in conversionRequests)
         {
@@ -50,9 +51,10 @@ public class AutomaticDeletionJob : IRecurringJob
                 context.WriteLine($"Failed to delete files for conversion request {conversionRequest.Id}. Because of {ex.Message} {ex.InnerException}");
             }
 
-            _appDbContext.ConversionRequests.Remove(conversionRequest);
         }
 
-        await _appDbContext.SaveChangesAsync();
+        await _appDbContext.ConversionRequests
+                           .Where(x => conversionRequests.Select(r => r.Id).Contains(x.Id))
+                           .ExecuteDeleteAsync();
     }
 }
